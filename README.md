@@ -6,7 +6,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Project%20Status-80%25%20Complete-yellow?style=flat-square" />
   <img src="https://img.shields.io/badge/Tech-FastAPI%20%7C%20React-blue?style=flat-square" />
-  <img src="https://img.shields.io/github/stars/yourusername/sensiem?style=social" />
+  <img src="https://img.shields.io/github/stars/chandruthehacker/sensiem?style=social" />
 </p>
 
 ---
