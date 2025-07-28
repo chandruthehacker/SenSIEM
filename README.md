@@ -59,7 +59,7 @@ Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/sensiem.git
+git clone https://github.com/chandruthehacker/Sensiem.git
 cd sensiem
 
 # 2. Backend setup (FastAPI)
