@@ -1,0 +1,243 @@
+Jan 20 10:00:01 myhost systemd[1]: Started Session c1 of user user1.
+
+Jan 20 10:00:02 myhost kernel: usb 1-1.2: new full-speed USB device number 3 using xhci_hcd
+
+Jan 20 10:00:03 myhost sshd[1234]: Accepted publickey for user2 from 192.168.1.10 port 54321 ssh2: RSA SHA256:abcdABCDabcdABCD
+
+Jan 20 10:00:04 myhost sudo[5678]: user3 : TTY=pts/0 ; PWD=/home/user3 ; USER=root ; COMMAND=/bin/apt update
+
+Jan 20 10:00:05 myhost CRON[9012]: (root) CMD (command -v anacron >/dev/null && anacron -s)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:07 myhost systemd[1]: Reached target Network is Online.
+
+Jan 20 10:00:08 myhost kernel: IP: 192.168.1.100 died
+
+Jan 20 10:00:09 myhost dhclient[1111]: DHCPACK from 192.168.1.1
+
+Jan 20 10:00:10 myhost named[2222]: client 10.0.0.5#12345 (www.example.com): query (cache) 'www.example.com/A/IN' denied
+
+Jan 20 10:00:11 myhost ufw[3333]: [UFW BLOCK] IN=eth0 OUT= MAC=01:23:45:67:89:ab:cd:ef:gh:ij:kl:mn:op:qr SRC=10.0.0.2 DST=10.0.0.3 LEN=40 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=TCP SPT=12345 DPT=80 WINDOW=0 RES=0x00 ACK SYN URGP=0
+
+Jan 20 10:00:12 myhost apache2[4444]: [mpm_prefork:notice] [pid 4444] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+
+Jan 20 10:00:13 myhost mysqld[5555]: Aborted connection 5555 to db: 'mydb' user: 'myuser' host: 'localhost' (Got an error reading communication packets)
+
+Jan 20 10:00:14 myhost kernel: audit: type=1400 audit(1674230414.000:1): apparmor="DENIED" operation="open" profile="/usr/bin/firefox" name="/etc/lsb-release" comm="firefox" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+
+Jan 20 10:00:15 myhost NetworkManager[6666]: <info> [1674230415.0000] device (eth0): state change: activated -> deactivating (reason 'user-requested', sys-iface-state: 'managed')
+
+Jan 20 10:00:16 myhost systemd[1]: Stopping User Manager for UID 1001...
+
+Jan 20 10:00:17 myhost systemd[1]: session-c2.scope: Succeeded.
+
+Jan 20 10:00:18 myhost sshd[7777]: Connection closed by 192.168.1.20 port 12345 [preauth]
+
+Jan 20 10:00:19 myhost systemd-udevd[8888]: Process '/usr/bin/set-wireless-regdom' failed with exit code 1.
+
+Jan 20 10:00:20 myhost kernel: [123.456789] Out of memory: Kill process 999 (myprocess) score 800 or sacrifice child
+
+Jan 20 10:00:21 myhost rsyslogd[9999]: [origin software="rsyslogd" swVersion="8.2001.0" x-pid="9999" x-info="http://www.rsyslog.com"] rsyslogd received SIGHUP, resuming.
+
+Jan 20 10:00:22 myhost logger: This is a custom log message from a script.
+
+Jan 20 10:00:23 myhost ModemManager[1000]: <info> [sleep-monitor-systemd] system is sleeping
+
+Jan 20 10:00:24 myhost polkitd[2000]: Registered Authentication Agent for unix-session:c3 (system bus name :1.123 [/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1], object path /org/gnome/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+
+Jan 20 10:00:25 myhost bluetoothd[3000]: Endpoint registered: sender=:1.456 path=/MediaEndpoint/A2DPSource/sbc
+
+Jan 20 10:00:26 myhost kernel: EXT4-fs (sda1): mounted filesystem with ordered data mode. Opts: (null)
+
+Jan 20 10:00:27 myhost systemd[1]: Created slice User Slice of UID 1002.
+
+Jan 20 10:00:28 myhost cupsd[4000]: Scheduler shutting down.
+
+Jan 20 10:00:29 myhost gnome-shell[5000]: clutter_stage_cogl_set_use_color_debug: assertion 'CLUTTER_IS_STAGE_COGLED (stage)' failed
+
+Jan 20 10:00:30 myhost dovecot: imap-login: Login: user=<testuser>, method=PLAIN, rip=192.168.1.50, lip=192.168.1.1, TLS, session=<abcDEF123>
+
+Jan 20 10:00:31 myhost chronyd[6000]: Selected source 1.pool.ntp.org
+
+Jan 20 10:00:32 myhost containerd[7000]: time="2025-01-20T10:00:32.123456789Z" level=info msg="Starting containerd" revision=2a0e4c6c9a42b1059f5b9d3326f688a7b1b3699b version=1.6.8
+
+Jan 20 10:00:33 myhost snapd[8000]: snap "core20" (2000) installed
+
+Jan 20 10:00:34 myhost PackageKit: daemon quit
+
+Jan 20 10:00:35 myhost apt.systemd.daily[9000]: Auto-apt-hack: running 'apt-get autoremove' for unattended upgrades cleanup
+
+Jan 20 10:00:36 myhost unbound[10000]: [10000:0] info: start of service (unbound 1.13.1).
+
+Jan 20 10:00:37 myhost lightdm[11000]: pam_unix(lightdm-greeter:session): session opened for user lightdm by (uid=0)
+
+Jan 20 10:00:38 myhost systemd[1]: Started WPA supplicant.
+
+Jan 20 10:00:39 myhost kernel: ACPI: button/lid: The lid device is not compliant to ACPI spec.
+
+Jan 20 10:00:40 myhost dockerd[12000]: time="2025-01-20T10:00:40.123456789Z" level=info msg="API listen on /var/run/docker.sock"
+
+Jan 20 10:00:41 myhost auditd[13000]: Audit daemon startup complete.
+
+Jan 20 10:00:42 myhost cron[14000]: (user4) RELOAD (cron/user4)
+
+Jan 20 10:00:43 myhost systemd-logind[15000]: New session 4 of user user5.
+
+Jan 20 10:00:44 myhost avahi-daemon[16000]: Leaving mDNS multicast group on interface enp0s3.IPv6 with address fe80::a00:27ff:fe00:0.
+
+Jan 20 10:00:45 myhost systemd[1]: run-user-1000-gvfs.mount: Succeeded.
+
+Jan 20 10:00:46 myhost systemd[1]: Mounting FUSE Control File System...
+
+Jan 20 10:00:47 myhost kernel: Bluetooth: RFCOMM TTY layer initialized
+
+Jan 20 10:00:48 myhost spice-vdagent[17000]: Guest agent started
+
+Jan 20 10:00:49 myhost fwupd[18000]: 16:00:49:0397 FuPluginUsb:could_find_device_with_path: could not find USB device with path '0:1'
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:01 myhost systemd[1]: Started Session c1 of user user1.
+
+Jan 20 10:00:02 myhost kernel: usb 1-1.2: new full-speed USB device number 3 using xhci_hcd
+
+Jan 20 10:00:03 myhost sshd[1234]: Accepted publickey for user2 from 192.168.1.10 port 54321 ssh2: RSA SHA256:abcdABCDabcdABCD
+
+Jan 20 10:00:04 myhost sudo[5678]: user3 : TTY=pts/0 ; PWD=/home/user3 ; USER=root ; COMMAND=/bin/apt update
+
+Jan 20 10:00:05 myhost CRON[9012]: (root) CMD (command -v anacron >/dev/null && anacron -s)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:07 myhost systemd[1]: Reached target Network is Online.
+
+Jan 20 10:00:08 myhost kernel: IP: 192.168.1.100 died
+
+Jan 20 10:00:09 myhost dhclient[1111]: DHCPACK from 192.168.1.1
+
+Jan 20 10:00:10 myhost named[2222]: client 10.0.0.5#12345 (www.example.com): query (cache) 'www.example.com/A/IN' denied
+
+Jan 20 10:00:11 myhost ufw[3333]: [UFW BLOCK] IN=eth0 OUT= MAC=01:23:45:67:89:ab:cd:ef:gh:ij:kl:mn:op:qr SRC=10.0.0.2 DST=10.0.0.3 LEN=40 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=TCP SPT=12345 DPT=80 WINDOW=0 RES=0x00 ACK SYN URGP=0
+
+Jan 20 10:00:12 myhost apache2[4444]: [mpm_prefork:notice] [pid 4444] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+
+Jan 20 10:00:13 myhost mysqld[5555]: Aborted connection 5555 to db: 'mydb' user: 'myuser' host: 'localhost' (Got an error reading communication packets)
+
+Jan 20 10:00:14 myhost kernel: audit: type=1400 audit(1674230414.000:1): apparmor="DENIED" operation="open" profile="/usr/bin/firefox" name="/etc/lsb-release" comm="firefox" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+
+Jan 20 10:00:15 myhost NetworkManager[6666]: <info> [1674230415.0000] device (eth0): state change: activated -> deactivating (reason 'user-requested', sys-iface-state: 'managed')
+
+Jan 20 10:00:16 myhost systemd[1]: Stopping User Manager for UID 1001...
+
+Jan 20 10:00:17 myhost systemd[1]: session-c2.scope: Succeeded.
+
+Jan 20 10:00:18 myhost sshd[7777]: Connection closed by 192.168.1.20 port 12345 [preauth]
+
+Jan 20 10:00:19 myhost systemd-udevd[8888]: Process '/usr/bin/set-wireless-regdom' failed with exit code 1.
+
+Jan 20 10:00:20 myhost kernel: [123.456789] Out of memory: Kill process 999 (myprocess) score 800 or sacrifice child
+
+Jan 20 10:00:21 myhost rsyslogd[9999]: [origin software="rsyslogd" swVersion="8.2001.0" x-pid="9999" x-info="http://www.rsyslog.com"] rsyslogd received SIGHUP, resuming.
+
+Jan 20 10:00:22 myhost logger: This is a custom log message from a script.
+
+Jan 20 10:00:23 myhost ModemManager[1000]: <info> [sleep-monitor-systemd] system is sleeping
+
+Jan 20 10:00:24 myhost polkitd[2000]: Registered Authentication Agent for unix-session:c3 (system bus name :1.123 [/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1], object path /org/gnome/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+
+Jan 20 10:00:25 myhost bluetoothd[3000]: Endpoint registered: sender=:1.456 path=/MediaEndpoint/A2DPSource/sbc
+
+Jan 20 10:00:26 myhost kernel: EXT4-fs (sda1): mounted filesystem with ordered data mode. Opts: (null)
+
+Jan 20 10:00:27 myhost systemd[1]: Created slice User Slice of UID 1002.
+
+Jan 20 10:00:28 myhost cupsd[4000]: Scheduler shutting down.
+
+Jan 20 10:00:29 myhost gnome-shell[5000]: clutter_stage_cogl_set_use_color_debug: assertion 'CLUTTER_IS_STAGE_COGLED (stage)' failed
+
+Jan 20 10:00:30 myhost dovecot: imap-login: Login: user=<testuser>, method=PLAIN, rip=192.168.1.50, lip=192.168.1.1, TLS, session=<abcDEF123>
+
+Jan 20 10:00:31 myhost chronyd[6000]: Selected source 1.pool.ntp.org
+
+Jan 20 10:00:32 myhost containerd[7000]: time="2025-01-20T10:00:32.123456789Z" level=info msg="Starting containerd" revision=2a0e4c6c9a42b1059f5b9d3326f688a7b1b3699b version=1.6.8
+
+Jan 20 10:00:33 myhost snapd[8000]: snap "core20" (2000) installed
+
+Jan 20 10:00:34 myhost PackageKit: daemon quit
+
+Jan 20 10:00:35 myhost apt.systemd.daily[9000]: Auto-apt-hack: running 'apt-get autoremove' for unattended upgrades cleanup
+
+Jan 20 10:00:36 myhost unbound[10000]: [10000:0] info: start of service (unbound 1.13.1).
+
+Jan 20 10:00:37 myhost lightdm[11000]: pam_unix(lightdm-greeter:session): session opened for user lightdm by (uid=0)
+
+Jan 20 10:00:38 myhost systemd[1]: Started WPA supplicant.
+
+Jan 20 10:00:39 myhost kernel: ACPI: button/lid: The lid device is not compliant to ACPI spec.
+
+Jan 20 10:00:40 myhost dockerd[12000]: time="2025-01-20T10:00:40.123456789Z" level=info msg="API listen on /var/run/docker.sock"
+
+Jan 20 10:00:41 myhost auditd[13000]: Audit daemon startup complete.
+
+Jan 20 10:00:42 myhost cron[14000]: (user4) RELOAD (cron/user4)
+
+Jan 20 10:00:43 myhost systemd-logind[15000]: New session 4 of user user5.
+
+Jan 20 10:00:44 myhost avahi-daemon[16000]: Leaving mDNS multicast group on interface enp0s3.IPv6 with address fe80::a00:27ff:fe00:0.
+
+Jan 20 10:00:45 myhost systemd[1]: run-user-1000-gvfs.mount: Succeeded.
+
+Jan 20 10:00:46 myhost systemd[1]: Mounting FUSE Control File System...
+
+Jan 20 10:00:47 myhost kernel: Bluetooth: RFCOMM TTY layer initialized
+
+Jan 20 10:00:48 myhost spice-vdagent[17000]: Guest agent started
+
+Jan 20 10:00:49 myhost fwupd[18000]: 16:00:49:0397 FuPluginUsb:could_find_device_with_path: could not find USB device with path '0:1'
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:12 myhost apache2[4444]: [mpm_prefork:notice] [pid 4444] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+
+Jan 20 10:00:04 myhost sudo[5678]: user3 : TTY=pts/0 ; PWD=/home/user3 ; USER=root ; COMMAND=/bin/apt update
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:12 myhost apache2[4444]: [mpm_prefork:notice] [pid 4444] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+
+Jan 20 10:00:20 myhost kernel: [123.456789] Out of memory: Kill process 999 (myprocess) score 800 or sacrifice child
+
+Jan 20 10:00:12 myhost apache2[4444]: [mpm_prefork:notice] [pid 4444] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:50 myhost gnome-keyring-daemon[19000]: The SSH_AUTH_SOCK environmental variable is not set. The agent will not be registered.
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:06 myhost postfix/qmgr[12345]: A1B2C3D4E5: from=<sender@example.com>, size=1234, nrcpt=1 (queue active)
+
+Jan 20 10:00:38 myhost systemd[1]: Started WPA supplicant.

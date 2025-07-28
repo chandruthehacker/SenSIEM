@@ -1,0 +1,49 @@
+Jan  1 02:00:01 myhost sshd[1201]: Accepted password for chandru from 192.168.1.10 port 50001
+Jan  1 02:00:02 myhost sshd[1202]: Failed password for chandru from 192.168.1.10 port 50002
+Jan  1 02:00:02 myhost sshd[1203]: Failed password for chandru from 192.168.1.10 port 50003
+Jan  1 02:00:03 myhost sshd[1204]: Failed password for chandru from 192.168.1.10 port 50004
+Jan  1 02:00:03 myhost sshd[1205]: Failed password for chandru from 192.168.1.10 port 50005
+Jan  1 02:00:04 myhost sshd[1206]: Accepted password for chandru from 192.168.1.10 port 50006  
+Jan  1 03:00:05 myhost sshd[1207]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  1 04:00:10 myhost sshd[1208]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 04:00:15 myhost sshd[1209]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  1 05:00:01 myhost sshd[1210]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  1 06:00:05 myhost sshd[1211]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  1 07:00:10 myhost sshd[1212]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 07:00:15 myhost sshd[1213]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  1 08:00:01 myhost sshd[1214]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  1 09:00:05 myhost sshd[1215]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  1 10:00:10 myhost sshd[1216]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 10:00:15 myhost sshd[1217]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  1 11:00:01 myhost sshd[1218]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  1 12:00:05 myhost sshd[1219]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  1 13:00:10 myhost sshd[1220]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 13:00:15 myhost sshd[1221]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  2 01:00:01 myhost sshd[1222]: Accepted password for chandru from 192.168.1.10 port 22 
+Jan  2 01:00:05 myhost sshd[1223]: Accepted password for anthony from 10.0.0.20 port 22   
+Jan  2 03:00:10 myhost sshd[1224]: Accepted password for prince from 172.16.0.5 port 22   
+Jan  2 03:00:15 myhost sshd[1225]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  2 05:00:01 myhost sshd[1226]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  2 06:00:05 myhost sshd[1227]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  2 07:00:10 myhost sshd[1228]: Accepted password for prince from 172.16.0.5 port 22
+Jan  2 07:00:15 myhost sshd[1229]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  3 00:00:01 myhost sshd[1230]: Accepted password for chandru from 192.168.1.10 port 22 
+Jan  3 02:00:05 myhost sshd[1231]: Accepted password for anthony from 10.0.0.20 port 22   
+Jan  3 04:00:10 myhost sshd[1232]: Accepted password for prince from 172.16.0.5 port 22  
+Jan  3 04:00:15 myhost sshd[1233]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  4 08:00:01 myhost sshd[1234]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  4 09:00:05 myhost sshd[1235]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  4 10:00:10 myhost sshd[1236]: Accepted password for prince from 172.16.0.5 port 22
+Jan  4 10:00:15 myhost sshd[1237]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  5 12:00:01 myhost sshd[1238]: Accepted password for chandru from 192.168.1.10 port 22
+Jan  5 13:00:05 myhost sshd[1239]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  5 14:00:10 myhost sshd[1240]: Accepted password for prince from 172.16.0.5 port 22
+Jan  5 14:00:15 myhost sshd[1241]: Accepted password for sanjay from 192.168.1.25 port 22
+Jan  6 16:00:01 myhost sudo:   chandru : TTY=pts/2 ; PWD=/home/chandru ; USER=root ; COMMAND=/bin/su - root  # Sudden sudo
+Jan  6 16:00:05 myhost sudo:   anthony : TTY=pts/3 ; PWD=/var/log/apache2 ; USER=root ; COMMAND=/usr/sbin/apache2ctl graceful
+Jan  6 08:00:10 myhost sudo:   prince : TTY=pts/4 ; PWD=/var/www ; USER=root ; COMMAND=/usr/bin/git pull origin main
+Jan  6 08:00:15 myhost sudo:   sanjay : TTY=pts/5 ; PWD=/etc/nginx/sites-available ; USER=root ; COMMAND=/usr/sbin/nginx -s reload
+Jan  6 17:00:01 myhost sudo:   chandru : TTY=pts/6 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/apt-get update
+Jan  6 18:00:05 myhost sudo:   anthony : TTY=pts/7 ; PWD=/etc/ssh ; USER=root ; COMMAND=/usr/bin/vim /etc/ssh/sshd_config
+Jan  6 19:00:10 myhost sudo:   prince : TTY=pts/8 ; PWD=/home/prince/backups ; USER=root ; COMMAND=/usr/bin/tar -czvf backup.tar.gz /var/www
+Jan  6 20:00:15 myhost sudo:   sanjay : TTY=pts/9 ; PWD=/var/log/mysql ; USER=root ; COMMAND=/usr/bin/tail -f /var/log/mysql/error.log

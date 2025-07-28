@@ -1,0 +1,63 @@
+Jan  1 00:00:01 myhost systemd[1]: Started Session 1234 for user chandru.
+Jan  1 00:00:02 myhost audit[1235]: USER_AUTH pid=1235 uid=1001 auid=1001 ses=2 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 00:00:03 myhost audit[1235]: USER_ACCT pid=1235 uid=1001 auid=1001 ses=2 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 00:00:05 myhost systemd[1]: Started Session 1236 for user anthony.
+Jan  1 00:00:06 myhost audit[1237]: USER_AUTH pid=1237 uid=1002 auid=1002 ses=3 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 00:00:07 myhost audit[1237]: USER_ACCT pid=1237 uid=1002 auid=1002 ses=3 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 00:00:10 myhost sudo[1238]:   prince : TTY=pts/0 ; PWD=/home/prince ; USER=root ; COMMAND=/bin/ls -l
+Jan  1 00:00:11 myhost audit[1238]:  USER_CMD pid=1238 uid=1003 auid=1003 ses=4 msg='cwd="/home/prince" cmd="/bin/ls -l" exe="/usr/bin/sudo" terminal=pts/0 res=success'
+Jan  1 00:00:12 myhost audit[1238]:  CRED_REFR pid=1238 uid=0 auid=1003 ses=4 msg='op=credentials msg=setcred exe="/usr/bin/sudo" terminal=pts/0 res=success'
+Jan  1 00:00:15 myhost systemd[1]: Started Session 1239 for user sanjay.
+Jan  1 00:00:16 myhost audit[1240]: USER_AUTH pid=1240 uid=1004 auid=1004 ses=5 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="sanjay" exe="/usr/sbin/sshd" hostname=192.168.1.25 addr=192.168.1.25 terminal=ssh res=success'
+Jan  1 00:00:17 myhost audit[1240]: USER_ACCT pid=1240 uid=1004 auid=1004 ses=5 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="sanjay" exe="/usr/sbin/sshd" hostname=192.168.1.25 addr=192.168.1.25 terminal=ssh res=success'
+Jan  1 01:00:01 myhost CRON[1241]: (root) CMD ( /usr/sbin/logrotate /etc/logrotate.conf )
+Jan  1 02:00:01 myhost myapp[2001]: Login attempt for chandru from 192.168.1.50
+Jan  1 02:00:02 myhost myapp[2002]: Login attempt for chandru from 192.168.1.50
+Jan  1 02:00:03 myhost myapp[2003]: Login attempt for chandru from 192.168.1.50
+Jan  1 02:00:04 myhost myapp[2004]: Login attempt for chandru from 192.168.1.50 
+Jan  1 02:00:05 myhost myapp[2005]: Login attempt for chandru from 192.168.1.50
+Jan  1 02:00:06 myhost myapp[2006]: Login successful for chandru from 192.168.1.50
+Jan  1 03:00:05 myhost sshd[1242]: Accepted password for anthony from 10.0.0.20 port 22
+Jan  1 03:00:06 myhost audit[1243]: USER_AUTH pid=1243 uid=1002 auid=1002 ses=6 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 03:00:07 myhost audit[1243]: USER_ACCT pid=1243 uid=1002 auid=1002 ses=6 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 04:00:10 myhost sshd[1244]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 05:00:01 myhost systemd[1]: Started Session 1245 for user chandru.
+Jan  1 05:00:02 myhost audit[1246]: USER_AUTH pid=1246 uid=1001 auid=1001 ses=7 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 05:00:03 myhost audit[1246]: USER_ACCT pid=1246 uid=1001 auid=1001 ses=7 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 06:00:05 myhost systemd[1]: Started Session 1247 for user anthony.
+Jan  1 06:00:06 myhost audit[1248]: USER_AUTH pid=1248 uid=1002 auid=1002 ses=8 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 06:00:07 myhost audit[1248]: USER_ACCT pid=1248 uid=1002 auid=1002 ses=8 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 07:00:10 myhost sshd[1249]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 08:00:01 myhost systemd[1]: Started Session 1250 for user chandru.
+Jan  1 08:00:02 myhost audit[1251]: USER_AUTH pid=1251 uid=1001 auid=1001 ses=9 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 08:00:03 myhost audit[1251]: USER_ACCT pid=1251 uid=1001 auid=1001 ses=9 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 09:00:05 myhost systemd[1]: Started Session 1252 for user anthony.
+Jan  1 09:00:06 myhost audit[1253]: USER_AUTH pid=1253 uid=1002 auid=1002 ses=10 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 09:00:07 myhost audit[1253]: USER_ACCT pid=1253 uid=1002 auid=1002 ses=10 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 10:00:10 myhost sshd[1254]: Failed password for prince from 203.0.113.15 port 22
+Jan  1 11:00:01 myhost systemd[1]: Started Session 1255 for user chandru.
+Jan  1 11:00:02 myhost audit[1256]: USER_AUTH pid=1256 uid=1001 auid=1001 ses=11 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 11:00:03 myhost audit[1256]: USER_ACCT pid=1256 uid=1001 auid=1001 ses=11 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  1 12:00:05 myhost systemd[1]: Started Session 1257 for user anthony.
+Jan  1 12:00:06 myhost audit[1258]: USER_AUTH pid=1258 uid=1002 auid=1002 ses=12 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 12:00:07 myhost audit[1258]: USER_ACCT pid=1258 uid=1002 auid=1002 ses=12 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  1 13:00:10 myhost sshd[1259]: Failed password for prince from 203.0.113.15 port 22
+Jan  2 01:00:01 myhost systemd[1]: Started Session 1260 for user chandru.  # Suspicious login time
+Jan  2 01:00:02 myhost audit[1261]: USER_AUTH pid=1261 uid=1001 auid=1001 ses=13 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  2 01:00:03 myhost audit[1261]: USER_ACCT pid=1261 uid=1001 auid=1001 ses=13 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="chandru" exe="/usr/sbin/sshd" hostname=192.168.1.10 addr=192.168.1.10 terminal=ssh res=success'
+Jan  2 01:00:05 myhost systemd[1]: Started Session 1262 for user anthony.  # Suspicious login time
+Jan  2 01:00:06 myhost audit[1263]: USER_AUTH pid=1263 uid=1002 auid=1002 ses=14 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  2 01:00:07 myhost audit[1263]: USER_ACCT pid=1263 uid=1002 auid=1002 ses=14 msg='op=PAM:accounting grantors=pam_access,pam_unix,pam_permit acct="anthony" exe="/usr/sbin/sshd" hostname=10.0.0.20 addr=10.0.0.20 terminal=ssh res=success'
+Jan  2 03:00:10 myhost systemd[1]: Started Session 1264 for user prince.  # Login from new IP
+Jan  2 03:00:11 myhost audit[1265]: USER_AUTH pid=1265 uid=1003 auid=1003 ses=15 msg='op=PAM:authentication grantors=pam_securetty,pam_permit,pam_unix acct="prince" exe="/usr/sbin/sshd" hostname=172.16.0.5 addr=172.16.0.5 terminal=ssh res=success'
+Jan  2 03:00:12 myhost audit[1265]: USER_ACCT
+Jan  1 02:30:12 myhost sshd[2345]: Failed password for invalid user test from 192.168.1.55 port 45678
+Jan  1 02:30:13 myhost sshd[2346]: Failed password for root from 192.168.1.55 port 45679
+Jan  1 02:30:14 myhost sshd[2347]: Failed password for admin from 192.168.1.55 port 45680
+Jan  5 10:00:01 myhost sudo[1234]: pam_authenticate: Authentication failure
+Jan  5 10:00:01 myhost sudo[1235]: user1 : 3 incorrect password attempts
+Jan 10 14:15:22 myhost  su[5678]: Authentication failure
+Jan 15 22:40:05 myhost  login[8901]: FAILED LOGIN session opened for user root by (uid=0)
+Jan 20 08:22:18 myhost  sshd[9012]: Connection closed by 203.0.113.20 [preauth]
+Feb  1 16:55:30 myhost  systemd-logind[3456]: Failed to start session: Unit session-c1.scope already exists.
+Feb  5 12:12:12 myhost  kernel:  [UFW BLOCK] IN=eth0 OUT= MAC=... SRC=10.0.0.5 DST=192.168.1.10 ... PROTO=TCP SPT=22 DPT=4567 ...

@@ -1,0 +1,5 @@
+{
+  "backendIP": "localhost",
+  "backendPort": 8787,
+  "apiUrl": "http://localhost:8787/api"
+}
