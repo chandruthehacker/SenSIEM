@@ -49,7 +49,8 @@ Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this
 ### 📸 Screenshots
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/chandruthehackers/Sensiem/frontend/src/assets/Sensiem_Dashboard.png" width="800" alt="SenSIEM Dashboard" />
+  <img src="https://github.com/chandruthehacker/Sensiem/frontend/src/assets/Sensiem_Dashboard.png" width="800" alt="SenSIEM Dashboard" />
+  
   <br />
   <em>Interactive dashboards with alert graphs and IP stats</em>
 </p>
