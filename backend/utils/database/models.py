@@ -74,15 +74,18 @@ class LogSource(Base):
 # 3. Detection Rules
 class DetectionRule(Base):
     __tablename__ = "detection_rules"
+    
     id = Column(Integer, primary_key=True)
     name = Column(String(100))
     description = Column(Text)
-    rule_type = Column(String(50))  # e.g., threshold, pattern, anomaly
-    log_type = Column(String(50))
-    condition = Column(Text)  # Rule condition as string
+    rule_type = Column(String(50))        # e.g., "brute_force", "pattern", etc.
+    log_type = Column(String(50))         # Match against log type (syslog, firewall, etc.)
+    condition = Column(Text)              # Optional: future dynamic rules
     threshold = Column(Integer)
-    time_window = Column(Integer)  # seconds
+    time_window = Column(Integer)         # In seconds
+    interval_minutes = Column(Integer, default=5)  # ✅ Interval
     active = Column(Boolean, default=True)
+    last_run = Column(DateTime, nullable=True)     # ✅ Track last run
     created_at = Column(DateTime, default=datetime.utcnow)
 
 # 4. Alerts
@@ -91,8 +94,7 @@ class Alert(Base):
 
     id = Column(Integer, primary_key=True)
 
-    rule_type = Column(String(100), nullable=False)         # e.g., "Brute Force", "Anomaly", etc.
-
+    rule_id = Column(Integer, ForeignKey("detection_rules.id"), nullable=False)
     log_id = Column(Integer, ForeignKey("parsed_logs.id"))
 
     alert_time = Column(DateTime, default=datetime.utcnow)
@@ -108,6 +110,7 @@ class Alert(Base):
     source = Column(String(255), nullable=True)
 
     log = relationship("ParsedLog", back_populates="alerts")
+    rule = relationship("DetectionRule")  # 💡 New: link to rule
 
 # 5. Saved Queries
 class SavedQuery(Base):

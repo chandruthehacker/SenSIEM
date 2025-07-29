@@ -180,4 +180,43 @@ def add_parsed_log_to_db(parsed_data):
     finally:
         con.close()
 
+def create_alert(rule_type, severity, message, log_id=None, ip=None, host=None, source=None, status="new"):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
+        cursor.execute("""
+            INSERT INTO alerts (
+                rule_type,
+                log_id,
+                alert_time,
+                severity,
+                message,
+                status,
+                acknowledged_at,
+                resolved_at,
+                ip,
+                host,
+                source
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            rule_type,
+            log_id,
+            datetime.utcnow(),
+            severity,
+            message,
+            status,
+            None,       # acknowledged_at
+            None,       # resolved_at
+            ip,
+            host,
+            source
+        ))
+
+        conn.commit()
+        return {"status": "success", "message": "Alert created."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
