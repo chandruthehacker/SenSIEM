@@ -1,9 +1,10 @@
 <h1 align="center">
-  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Search.png)
   <br>
   <span>SenSIEM</span> - Intrusion Detection & Log Monitoring Tool
 </h1>
+  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Search.png)
 
+  
 <p align="center">
   <img src="https://img.shields.io/badge/Project%20Status-80%25%20Complete-yellow?style=flat-square" />
   <img src="https://img.shields.io/badge/Tech-FastAPI%20%7C%20React-blue?style=flat-square" />
@@ -48,18 +49,20 @@ Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this
 
 ### 📸 Screenshots
 
+### 📸 Screenshots
+
 <p align="center">
-  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Dashboard.png)
-  
+  <img src="frontend/src/assets/Sensiem_Dashboard.png" alt="SenSIEM Dashboard" width="700"/>
   <br />
   <em>Interactive dashboards with alert graphs and IP stats</em>
 </p>
 
 <p align="center">
-  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Alerts.png)
+  <img src="frontend/src/assets/Sensiem_Alerts.png" alt="SenSIEM Alerts" width="700"/>
   <br />
   <em>Interactive Alerts with alert graphs and IP stats</em>
 </p>
+
 
 
 ---
