@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/frontend/public/Sensiem_Search.png" width="100" />
+  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Search.png)
   <br>
   <span>SenSIEM</span> - Intrusion Detection & Log Monitoring Tool
 </h1>
@@ -49,14 +49,14 @@ Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this
 ### 📸 Screenshots
 
 <p align="center">
-  <img src="https://github.com/chandruthehacker/Sensiem/frontend/src/assets/Sensiem_Dashboard.png" width="800" alt="SenSIEM Dashboard" />
+  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Dashboard.png)
   
   <br />
   <em>Interactive dashboards with alert graphs and IP stats</em>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/chandruthehackers/Sensiem/frontend/src/assets/Sensiem_Alerts.png" width="800" alt="SenSIEM Dashboard" />
+  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Alerts.png)
   <br />
   <em>Interactive Alerts with alert graphs and IP stats</em>
 </p>
