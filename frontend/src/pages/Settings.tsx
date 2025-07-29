@@ -31,6 +31,8 @@ import { Textarea } from "@/components/ui/textarea";
 
 import {NotificationSettings} from "@/components/cards/NotificationSetting";
 import {BackendSettings} from "@/components/cards/BackendSettings";
+import DetectionRules from "@/components/cards/DetectionRules";
+
 import { toast } from "sonner";
 
 import backendConfig from "@/configs/config.json";
@@ -759,6 +761,8 @@ const handleAddSource = async () => {
                   )}
                 </CardContent>
               </Card>
+
+              <DetectionRules />  
 
               {/* Notification Settings */}
               <NotificationSettings

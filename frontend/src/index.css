@@ -286,8 +286,6 @@
 }
 
 
-
-/* Soft outer glow on hover */
 .hover\:shadow-glow:hover {
   box-shadow: 0 0 10px rgba(255, 0, 100, 0.3), 0 0 20px rgba(0, 150, 255, 0.2);
 }
@@ -296,3 +294,4 @@
 .shadow-card {
   @apply shadow-lg shadow-black/20;
 }
+
