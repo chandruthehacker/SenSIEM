@@ -2,6 +2,7 @@
   <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/main/frontend/src/assets/logo.png" width="60" />
   <br />
   <b>SenSIEM</b>
+  **Security Event Notification & SIEM**
   <br />
   <em>Intrusion Detection & Real-Time Log Monitoring System</em>
 </h1>
