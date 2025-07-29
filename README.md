@@ -1,6 +1,9 @@
 <h1 align="center">
-  <br>
-  <span>SenSIEM</span> - Intrusion Detection & Log Monitoring Tool
+  <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/main/frontend/src/assets/logo.png" width="60" />
+  <br />
+  <b>SenSIEM</b>
+  <br />
+  <em>Intrusion Detection & Real-Time Log Monitoring System</em>
 </h1>
 
 <p align="center">
@@ -11,139 +14,188 @@
 
 ---
 
-> 🚧 **Project Status: 80% Complete — Core System Functional!**
->
-> ✅ Real-time detection, alert engine, dashboards, and notifications are working.  
-> 🔧 Remaining: Rule editor, better UX, final cleanup & docs in progress.  
-> 🛠️ SenSIEM is already practical and perfect for cybersecurity portfolios.
+> ⚠️ **Work in Progress:**  
+> ✅ Core modules are working (log analysis, dashboards, alerts, notifications).  
+> 🧠 Final steps: rule editor, UX polish, documentation cleanup.  
+> 🎯 Ideal for cybersecurity students and aspiring SOC analysts.
 
 ---
 
-### 🛡️ What is SenSIEM?
+## 🛡️ What is SenSIEM?
 
-**SenSIEM** is a modern, lightweight Security Information and Event Management (SIEM) system built for:
+**SenSIEM** (Sentinel + SIEM) is a modular, real-time Security Information and Event Management (SIEM) platform built for:
 
-- 🔍 **Real-time log analysis**
-- ⚡ **Intrusion detection**
-- 📢 **Immediate alert notifications**
-- 📊 **Visual dashboards & search filters**
+- 🔍 **Log analysis and search with filters**
+- ⚠️ **Intrusion detection and alerting**
+- 📊 **Interactive dashboards and trends**
+- 💬 **Multi-channel alert notifications**
 
-Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this is a hands-on tool that mimics real-world detection workflows.
-
----
-
-### ✨ Features
-
-- 🔥 Live log ingestion with real-time alerting
-- 🧠 Severity-based classification (Critical, High, Medium, Low)
-- 🔍 Splunk-style query filters (`log_level=`, `source=`, `host=`, etc.)
-- 📊 Dynamic dashboards (top IPs, alert breakdowns, log levels)
-- 💬 Notifications to **Email**, **Slack**, **Telegram**
-- 🧩 Modular structure (Frontend + Backend + Forwarder)
-- 📁 Easily add log paths or ingest files
-- 💾 SQLite/Postgres DB support for persistence
+This project is **portfolio-ready** and simulates a mini-SOC environment — perfect for blue-team enthusiasts, analysts, and learners.
 
 ---
 
-## 📂 SenSIEM Pages Overview
+## ✨ Features at a Glance
 
-### 🔎 1. Search Page
-
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Search.png" alt="SenSIEM Search Page" width="700"/>
-  <br />
-  <em>Powerful search with Splunk-style filters and full-text log analysis</em>
-</p>
-
-- Search logs using filters like:
-  - `from_host="192.168.0.5"`
-  - `log_level="error"`
-  - `source="sshd"`
-  - Any keyword or phrase like `unauthorized`, `aborted`, etc.
-- Combine filters for precise log discovery
-- Click to view full log details
+| Feature                        | Description                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| 🔥 Real-time detection         | Monitor logs continuously for anomalies                                     |
+| 🔎 Splunk-like filters         | `log_level=`, `source=`, `host=`, and full-text search                      |
+| 📊 Dashboards                 | Top IPs, alert trends, log breakdowns                                      |
+| 📩 Notifications              | Send alerts via **Email**, **Slack**, and **Telegram**                      |
+| 📁 Log Ingestion              | Add file or folder paths interactively                                     |
+| ⚙️ Settings Panel             | Control server IP, backup config, toggle modules                           |
+| 🛠️ Built with                | **FastAPI**, **React + Tailwind**, **SQLite/PostgreSQL**                   |
 
 ---
 
-### 📊 2. Dashboard Page
-
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Dashboard.png" alt="SenSIEM Dashboard" width="700"/>
-  <br />
-  <em>Interactive visual dashboards with alert trends, IP stats, log levels, and more</em>
-</p>
-
-- Displays:
-  - Top source IPs
-  - Alerts over time
-  - Log level breakdowns
-  - Suspicious login attempts
-- Updated dynamically from the backend
-
----
-
-### 📄 3. Logs Page
-
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Logs.png" alt="SenSIEM Logs Page" width="700"/>
-  <br />
-  <em>Complete log stream view with quick access to any entry</em>
-</p>
-
-- View all ingested logs in chronological order
-- Click on each log to expand full details
-- Shows timestamp, log level, source, and more
-
----
-
-### 🚨 4. Alerts Page
-
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Alerts.png" alt="SenSIEM Alerts Page" width="700"/>
-  <br />
-  <em>Severity-filtered alerts with detailed threat detection info</em>
-</p>
-
-- Auto-detected alerts based on:
-  - Suspicious log patterns
-  - Failed logins
-  - Brute-force attempts
-- Severity categories: Critical, High, Medium, Low
-- Integrated alert rules with real-time trigger system
-
----
-
-### ⚙️ 5. Settings Page
-
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Settings.png" alt="SenSIEM Settings Page" width="700"/>
-  <br />
-  <em>Manage log paths, configure notifications, and backup settings</em>
-</p>
-
-- Add/remove log folders to monitor
-- Test and configure notification channels:
-  - Email
-  - Slack
-  - Telegram
-- Save/load backup settings
-- Update destination backend IP and port
-
----
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone the repo
+# Clone the project
 git clone https://github.com/chandruthehacker/Sensiem.git
-cd sensiem
+cd Sensiem
 
-# 2. Backend setup (FastAPI)
+# Setup Backend (FastAPI)
 cd backend
 pip install -r requirements.txt
 python run.py
 
-# 3. Frontend setup (Next.js + Tailwind)
+# Setup Frontend (Next.js + Tailwind)
 cd ../frontend
 npm install
 npm run dev
+```
+
+## 🖥️ Full System Overview
+
+---
+
+### 🔎 Search Logs (Powerful Filtering)
+
+![Search Logs](frontend/src/assets/Sensiem_Search.png)
+
+_Advanced log search with field-based filtering and keyword matching._
+
+You can filter logs using flexible query syntax like:
+
+- `from_host="192.168.1.10" log_level=error`
+- `source="apache"` or `process="sshd"`
+- Any keyword like `unauthorized`, `bruteforce`, `aborted`
+
+---
+
+### 📊 Dashboards (Visual Insights)
+
+![Dashboards](frontend/src/assets/Sensiem_Dashboard.png)
+
+_Track threats, IPs, alerts, and system health in real-time._
+
+Includes:
+
+- Top IPs generating traffic
+- Log level pie charts
+- Alert trends over time
+- Suspicious login patterns
+
+---
+
+### 📄 Logs Page (Full Log Viewer)
+
+![Logs Viewer](frontend/src/assets/Sensiem_Logs.png)
+
+_Chronological stream of all log entries with expandable details._
+
+Features:
+
+- View all raw logs as they arrive
+- Click to expand log metadata (IP, source, timestamp, etc.)
+- Color-coded by severity level
+
+---
+
+### 🚨 Alerts Page (Detection Engine)
+
+![Alerts Page](frontend/src/assets/Sensiem_Alerts.png)
+
+_Triggered alerts based on real-time detection rules._
+
+- Shows detected anomalies such as:
+  - Brute-force attempts
+  - Failed logins
+  - Port scans
+- Auto-classified by severity:
+  - 🔴 Critical
+  - 🟠 High
+  - 🟡 Medium
+  - 🟢 Low
+- Auto-refresh and sorted by latest alerts
+
+---
+
+### ⚙️ Settings Page (Control Panel)
+
+![Settings Page](frontend/src/assets/Sensiem_Settings.png)
+
+_Manage paths, server IPs, alert settings and backups._
+
+- 🔌 Add or remove log folders/files to monitor
+- 🌐 Update destination server IP/port
+- 🔔 Enable or test notifications (Slack, Telegram, Email)
+- 💾 Backup or restore configuration settings
+
+---
+
+## 📦 Architecture Overview
+
++--------------------+ +------------------------+
+| Log Forwarder |-----> | FastAPI Backend |
+| (Python) | | - Ingest & Parse |
++--------------------+ | - Alert Engine |
+| - API for Frontend |
++-----------+------------+
+|
++----------v----------+
+| React Frontend |
+| - Dashboards |
+| - Search & Logs |
+| - Alert Panel |
++----------------------+
+
+---
+
+## 📽️ Demo (Coming Soon...)
+
+🎥 Want to see it in action? Stay tuned for a YouTube demo and deployment tutorial!
+
+---
+
+## 🧠 Ideal For
+
+- ✅ SOC Analyst Portfolio Projects  
+- 🔐 Red/Blue Team Tooling  
+- 📝 Log Analysis Learning  
+- 🏠 Customizable Home-Lab SIEM Deployments
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🤝 Contributing
+
+Pull requests, feedback, and feature suggestions are welcome!  
+Let’s build a powerful open-source SIEM together.
+
+---
+
+## 🙌 Acknowledgements
+
+Big thanks to:
+
+- 🧬 The **FastAPI** and **React** communities  
+- 📚 Cybersecurity writeups and bloggers  
+- 💖 Everyone contributing to open-source tech
