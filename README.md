@@ -2,9 +2,7 @@
   <br>
   <span>SenSIEM</span> - Intrusion Detection & Log Monitoring Tool
 </h1>
-  ![SenSIEM Dashboard](frontend/src/assets/Sensiem_Search.png)
 
-  
 <p align="center">
   <img src="https://img.shields.io/badge/Project%20Status-80%25%20Complete-yellow?style=flat-square" />
   <img src="https://img.shields.io/badge/Tech-FastAPI%20%7C%20React-blue?style=flat-square" />
@@ -47,27 +45,93 @@ Whether you're a **SOC analyst**, cybersecurity student, or blue teamer — this
 
 ---
 
-### 📸 Screenshots
+## 📂 SenSIEM Pages Overview
 
-### 📸 Screenshots
+### 🔎 1. Search Page
+
+<p align="center">
+  <img src="frontend/src/assets/Sensiem_Search.png" alt="SenSIEM Search Page" width="700"/>
+  <br />
+  <em>Powerful search with Splunk-style filters and full-text log analysis</em>
+</p>
+
+- Search logs using filters like:
+  - `from_host="192.168.0.5"`
+  - `log_level="error"`
+  - `source="sshd"`
+  - Any keyword or phrase like `unauthorized`, `aborted`, etc.
+- Combine filters for precise log discovery
+- Click to view full log details
+
+---
+
+### 📊 2. Dashboard Page
 
 <p align="center">
   <img src="frontend/src/assets/Sensiem_Dashboard.png" alt="SenSIEM Dashboard" width="700"/>
   <br />
-  <em>Interactive dashboards with alert graphs and IP stats</em>
+  <em>Interactive visual dashboards with alert trends, IP stats, log levels, and more</em>
 </p>
 
-<p align="center">
-  <img src="frontend/src/assets/Sensiem_Alerts.png" alt="SenSIEM Alerts" width="700"/>
-  <br />
-  <em>Interactive Alerts with alert graphs and IP stats</em>
-</p>
-
-
+- Displays:
+  - Top source IPs
+  - Alerts over time
+  - Log level breakdowns
+  - Suspicious login attempts
+- Updated dynamically from the backend
 
 ---
 
-### 🚀 Getting Started
+### 📄 3. Logs Page
+
+<p align="center">
+  <img src="frontend/src/assets/Sensiem_Logs.png" alt="SenSIEM Logs Page" width="700"/>
+  <br />
+  <em>Complete log stream view with quick access to any entry</em>
+</p>
+
+- View all ingested logs in chronological order
+- Click on each log to expand full details
+- Shows timestamp, log level, source, and more
+
+---
+
+### 🚨 4. Alerts Page
+
+<p align="center">
+  <img src="frontend/src/assets/Sensiem_Alerts.png" alt="SenSIEM Alerts Page" width="700"/>
+  <br />
+  <em>Severity-filtered alerts with detailed threat detection info</em>
+</p>
+
+- Auto-detected alerts based on:
+  - Suspicious log patterns
+  - Failed logins
+  - Brute-force attempts
+- Severity categories: Critical, High, Medium, Low
+- Integrated alert rules with real-time trigger system
+
+---
+
+### ⚙️ 5. Settings Page
+
+<p align="center">
+  <img src="frontend/src/assets/Sensiem_Settings.png" alt="SenSIEM Settings Page" width="700"/>
+  <br />
+  <em>Manage log paths, configure notifications, and backup settings</em>
+</p>
+
+- Add/remove log folders to monitor
+- Test and configure notification channels:
+  - Email
+  - Slack
+  - Telegram
+- Save/load backup settings
+- Update destination backend IP and port
+
+---
+
+## 🚀 Getting Started
 
 ```bash
 # 1. Clone the repo
