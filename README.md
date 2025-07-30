@@ -22,7 +22,7 @@
 
 ## 🛡️ What is SenSIEM?
 
-**SenSIEM** (Sentinel + SIEM) is a modular, real-time Security Information and Event Management (SIEM) platform built for:
+**SenSIEM** (Security Event Notification + SIEM) is a modular, real-time Security Information and Event Management (SIEM) platform built for:
 
 - 🔍 **Log analysis and search with filters**
 - ⚠️ **Intrusion detection and alerting**
