@@ -1,16 +1,17 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/main/frontend/src/assets/logo.png" width="60" />
   <br />
-  <b>SenSIEM</b>
-  **Security Event Notification & SIEM**
+  <strong>SenSIEM</strong>
+  <br />
+  <sub><b>Security Event Notification & SIEM Platform</b></sub>
   <br />
   <em>Intrusion Detection & Real-Time Log Monitoring System</em>
 </h1>
 
+  <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/main/frontend/src/assets/SenSIEM.png" alt="SenSIEM Logo" align="center"/>
 <p align="center">
-  <img src="https://img.shields.io/badge/Project%20Status-80%25%20Complete-yellow?style=flat-square" />
-  <img src="https://img.shields.io/badge/Tech-FastAPI%20%7C%20React-blue?style=flat-square" />
-  <img src="https://img.shields.io/github/stars/chandruthehacker/sensiem?style=social" />
+  <img src="https://img.shields.io/badge/Project%20Status-80%25%20Complete-yellow?style=flat-square" alt="Project Status" />
+  <img src="https://img.shields.io/badge/Tech-FastAPI%20%7C%20React-blue?style=flat-square" alt="Tech Stack" />
+  <img src="https://img.shields.io/github/stars/chandruthehacker/sensiem?style=social" alt="GitHub Stars" />
 </p>
 
 ---
