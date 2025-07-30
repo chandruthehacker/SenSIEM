@@ -3,9 +3,6 @@
   <strong><b>👁 SenSIEM</b></strong>
 </h1>
 
-<h3 align="center">
-  <sub><b>Security Event Notification & SIEM Platform</b></sub>
-</h3>
 
   <img src="https://raw.githubusercontent.com/chandruthehacker/Sensiem/main/frontend/src/assets/SenSIEM.png" alt="SenSIEM Logo" align="center"/>
 <p align="center">
