@@ -7,6 +7,9 @@ import uvicorn
 import threading
 
 from backend.configs.config import load_config, save_config
+from backend.sensiem import get_detection_rules
+from backend.utils.database.database_operations import insert_default_detection_rules
+from backend.utils.database.models import create_tables
 from backend.utils.validation import is_valid_ip, is_valid_port
 
 # Constants
@@ -60,6 +63,8 @@ def open_browser():
     webbrowser.open(frontend_url)
 
 if __name__ == "__main__":
+    create_tables()
+    insert_default_detection_rules()
     threading.Thread(target=start_frontend).start()
     threading.Thread(target=open_browser).start()
 

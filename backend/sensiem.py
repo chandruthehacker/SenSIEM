@@ -1,18 +1,20 @@
 from contextlib import asynccontextmanager
 from io import StringIO
 import os
+import sqlite3
 import threading
 from fastapi import FastAPI, File, Form, Request, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 
+from backend.detections.detections_runner import run_all_active_rules_sync
 from backend.forwarder.forwarder import start_forwarder
 from backend.parser.log_parser import ingest_logs
-from backend.utils.database.database_operations import add_log_source_to_db, delete_log_source, get_log_paths
+from backend.utils.database.database_operations import add_log_source_to_db, delete_log_source, get_db_connection, get_log_paths
 from backend.utils.database.query import get_filtered_logs, get_logs_from_db, get_top_ips_from_db, getAlerts, getDashBoardmetrics, getGeoSuspiciousIPs, getLogLevelDistribution, getNoisySource, getSystemErrors, getTimeSeries, getTopAlerts
 from backend.utils.log_finder import log_type_find, specific_log_type_find
 from backend.utils.validation import is_log_content_valid, is_valid_ip, is_valid_path, is_valid_port
@@ -28,7 +30,6 @@ def start_embedded_forwarder():
     thread = threading.Thread(target=start_forwarder, daemon=True)
     thread.start()
     print("🚀 Embedded forwarder started.")
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -153,7 +154,7 @@ async def get_geo_suspicious_ips():
         raise HTTPException(status_code=500, detail=f"Error fetching top Geo Location: {str(e)}")
 
 @app.get("/api/time-series-logs-alerts")
-def get_time_series_logs_alerts():
+async def get_time_series_logs_alerts():
     try:
         data = getTimeSeries()
         return JSONResponse(content=data)
@@ -161,7 +162,7 @@ def get_time_series_logs_alerts():
         raise HTTPException(status_code=500, detail=f"Error fetching top Geo Location: {str(e)}")
 
 @app.get("/api/noisy-sources")
-def get_noisy_source(limit: int = 5):
+async def get_noisy_source(limit: int = 5):
     try:
         data = getNoisySource()
         return JSONResponse(content=data)
@@ -435,15 +436,76 @@ async def ingest_log(
             if detected != "unknown":
                 detected_type = detected
                 break
-
+        
+        path = "Ingested Log " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
         if detected_type != "unknown":
-            ingest_logs(text, detected_type, "Ingested Log")
+            ingest_logs(text, detected_type, path)
             return {"status": "success", "message": "Valid logs ingested.", "detected_type": detected_type}
 
         return {"status": "error", "message": "Invalid log content for selected type.", "detected_type": detected_type}
 
     except Exception as e:
         return {"status": "error", "message": f"Ingestion failed: {str(e)}"}
+
+class RuleToggleRequest(BaseModel):
+    active: bool
+
+@app.get("/api/detection-rules")
+async def get_detection_rules():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM detection_rules ORDER BY id ASC")
+        rows = cursor.fetchall()
+        rules = []
+        for row in rows:
+            rules.append({
+                "id": row["id"],
+                "name": row["name"],
+                "description": row["description"],
+                "rule_type": row["rule_type"],
+                "log_type": row["log_type"],
+                "condition": row["condition"],
+                "threshold": row["threshold"],
+                "time_window": row["time_window"],
+                "interval_minutes": row["interval_minutes"],
+                "active": row["active"],
+                "last_run": row["last_run"]
+            })
+        return rules
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@app.patch("/api/detection-rules/{rule_id}")
+async def update_detection_rule(rule_id: int, data: RuleToggleRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Update rule status
+        cursor.execute("UPDATE detection_rules SET active = ? WHERE id = ?", (int(data.active), rule_id))
+        conn.commit()
+
+        # Re-run all active rules after the update
+        try:
+            run_all_active_rules_sync()
+        except Exception as rule_error:
+            print(f"[ERROR] Failed to execute rules after update: {rule_error}")
+
+        return {
+            "status": "success",
+            "rule_id": rule_id,
+            "active": data.active
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update rule: {e}")
+
+    finally:
+        conn.close()
 
 # --- Frontend Routing ---
 @app.get("/{full_path:path}")

@@ -46,9 +46,6 @@ def add_log_source_to_db(path: str, log_type: str) -> dict:
             return {"status": "exists", "message": "Log source already exists"}
         
         name = os.path.basename(path) or "Ingested Log"
-        
-        if path.strip().lower() == "Ingested Log".lower():
-            path = "Ingested Log " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
 
         added_on = datetime.now(timezone.utc).isoformat()
@@ -78,6 +75,12 @@ def delete_log_source(path_to_delete: str, log_type: str) -> dict:
 
         if not row:
             return {"status": "error", "message": "Log source not found in database"}
+        
+        cursor.execute("SELECT * FROM parsed_logs WHERE file_path = ? AND type = ? ", (path_to_delete,log_type,))
+        row = cursor.fetchone()
+
+        if not row:
+            return {"status": "error", "message": "Parsed Log not found in database"}
 
         cursor.execute("DELETE FROM log_sources WHERE path = ? AND log_type = ? ", (path_to_delete,log_type,))
         cursor.execute("DELETE FROM parsed_logs WHERE file_path = ? AND type = ? ", (path_to_delete,log_type,))
@@ -220,3 +223,101 @@ def create_alert(rule_type, severity, message, log_id=None, ip=None, host=None, 
         return {"status": "error", "message": str(e)}
     finally:
         conn.close()
+
+def insert_default_detection_rules():
+    default_rules = [
+        {
+            "name": "Brute Force Login (Same IP)",
+            "description": "Detects 5+ failed logins from a single IP in 2 minutes.",
+            "rule_type": "brute_force",
+            "log_type": "auth",
+            "condition": "failed_login",
+            "threshold": 5,
+            "time_window": 120,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "Suspicious Privilege Escalation",
+            "description": "Detects sudden use of sudo/su or privilege escalation attempts.",
+            "rule_type": "privilege_escalation",
+            "log_type": "auth",
+            "condition": "sudo,su",
+            "threshold": 2,
+            "time_window": 300,  # 5 minutes
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Excessive Error Logs",
+            "description": "Detects abnormal volume of ERROR logs from the same process.",
+            "rule_type": "log_level",
+            "log_type": "application",
+            "condition": "ERROR",
+            "threshold": 15,
+            "time_window": 300,  # 5 minutes
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "High Volume Web Requests",
+            "description": "Detects 200+ web requests from a single IP in 60 seconds.",
+            "rule_type": "web_requests",
+            "log_type": "web",
+            "condition": "*",
+            "threshold": 200,
+            "time_window": 60,  # 1 minute
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "SSH Access From New Geo-Location",
+            "description": "Detects SSH login from a location not previously used by the user.",
+            "rule_type": "geo_anomaly",
+            "log_type": "auth",
+            "condition": "ssh_login",
+            "threshold": 1,
+            "time_window": 600,  # 10 minutes
+            "interval_minutes": 5,
+            "active": True
+        }
+    ]
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS detection_rules (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            description TEXT,
+            rule_type TEXT,
+            log_type TEXT,
+            condition TEXT,
+            threshold INTEGER,
+            time_window INTEGER,
+            interval_minutes INTEGER,
+            active BOOLEAN,
+            last_run TIMESTAMP,
+            created_at TIMESTAMP
+        )
+    """)
+
+    for rule in default_rules:
+        cursor.execute("""
+            SELECT COUNT(*) FROM detection_rules WHERE name = ?
+        """, (rule["name"],))
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("""
+                INSERT INTO detection_rules 
+                (name, description, rule_type, log_type, condition, threshold, time_window, interval_minutes, active, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                rule["name"], rule["description"], rule["rule_type"], rule["log_type"],
+                rule["condition"], rule["threshold"], rule["time_window"],
+                rule["interval_minutes"], rule["active"], datetime.utcnow()
+            ))
+
+    conn.commit()
+    conn.close()
+
+

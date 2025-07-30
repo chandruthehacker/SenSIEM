@@ -44,7 +44,7 @@ export function AlertConfirmDialog({
             onClick={handleConfirm}
             className={
               action === "acknowledge"
-                ? "bg-status-acknowledged hover:bg-status-acknowledged/90"
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-status-resolved hover:bg-status-resolved/90"
             }
           >
