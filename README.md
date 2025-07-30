@@ -85,7 +85,7 @@ Rules run continuously and can be fine-tuned per log type, time window, and thre
      ┌──────────────────────┐
      │  React + Tailwind UI │ ◀── Log Viewer, Dashboards
      └──────────────────────┘
-     ```
+```
 
 ---
 
