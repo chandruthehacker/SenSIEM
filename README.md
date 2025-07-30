@@ -33,17 +33,59 @@ This project is **portfolio-ready** and simulates a mini-SOC environment — per
 
 ---
 
-## ✨ Features at a Glance
+## 🚀 Features
 
-| Feature                        | Description                                                                 |
-|-------------------------------|-----------------------------------------------------------------------------|
-| 🔥 Real-time detection         | Monitor logs continuously for anomalies                                     |
-| 🔎 Splunk-like filters         | `log_level=`, `source=`, `host=`, and full-text search                      |
-| 📊 Dashboards                 | Top IPs, alert trends, log breakdowns                                      |
-| 📩 Notifications              | Send alerts via **Email**, **Slack**, and **Telegram**                      |
-| 📁 Log Ingestion              | Add file or folder paths interactively                                     |
-| ⚙️ Settings Panel             | Control server IP, backup config, toggle modules                           |
-| 🛠️ Built with                | **FastAPI**, **React + Tailwind**, **SQLite/PostgreSQL**                   |
+### 🔍 Log Search (Splunk-like)
+- Filter logs by log level, IP address, username, source, and time range
+- Supports smart query syntax and alias matching
+- View full log details in an interactive expandable dialog
+
+### 📊 Dashboards
+- Visual charts for log levels, alerts, suspicious IPs, and sources
+- Auto-refreshing dashboards with drill-down capabilities
+
+### 📁 Logs Viewer
+- Complete view of ingested logs with quick filter chips
+- Supports custom ingestion with dynamic log type detection
+
+### 🚨 Alerts
+- Real-time alerts triggered by detection rules (e.g., brute force, failed logins)
+- Color-coded severity levels with timestamp and log source linkage
+- Alert details dialog with scrollable context
+
+### ⚙️ Settings
+- Configure monitored paths or ingest files manually
+- Manage detection rules, thresholds, and alert frequency
+- Set up notification preferences (Email, Slack, Telegram)
+
+---
+
+## 🧠 Built-in Detection Rules
+
+- 🔐 Brute-force login detection
+- 🧑‍💻 Failed login spike alerts
+- 📊 Anomaly detection based on log frequency
+- 📈 Suspicious IP or geo-location monitoring
+
+Rules run continuously and can be fine-tuned per log type, time window, and threshold.
+
+---
+
+## 🧱 Architecture Overview
+
+```plaintext
+          ┌────────────┐
+          │  Forwarder │   (coming soon)
+          └────┬───────┘
+               ▼
+     ┌───────────────────┐
+     │   FastAPI Backend │ ◀── Rules Engine & DB
+     └────────┬──────────┘
+              ▼
+     ┌──────────────────────┐
+     │  React + Tailwind UI │ ◀── Log Viewer, Dashboards
+     └──────────────────────┘
+     ```
 
 ---
 
@@ -64,101 +106,6 @@ cd ../frontend
 npm install
 npm run dev
 ```
-
-## 🖥️ Full System Overview
-
----
-
-### 🔎 Search Logs (Powerful Filtering)
-
-![Search Logs](frontend/src/assets/Sensiem_Search.png)
-
-_Advanced log search with field-based filtering and keyword matching._
-
-You can filter logs using flexible query syntax like:
-
-- `from_host="192.168.1.10" log_level=error`
-- `source="apache"` or `process="sshd"`
-- Any keyword like `unauthorized`, `bruteforce`, `aborted`
-
----
-
-### 📊 Dashboards (Visual Insights)
-
-![Dashboards](frontend/src/assets/Sensiem_Dashboard.png)
-
-_Track threats, IPs, alerts, and system health in real-time._
-
-Includes:
-
-- Top IPs generating traffic
-- Log level pie charts
-- Alert trends over time
-- Suspicious login patterns
-
----
-
-### 📄 Logs Page (Full Log Viewer)
-
-![Logs Viewer](frontend/src/assets/Sensiem_Logs.png)
-
-_Chronological stream of all log entries with expandable details._
-
-Features:
-
-- View all raw logs as they arrive
-- Click to expand log metadata (IP, source, timestamp, etc.)
-- Color-coded by severity level
-
----
-
-### 🚨 Alerts Page (Detection Engine)
-
-![Alerts Page](frontend/src/assets/Sensiem_Alerts.png)
-
-_Triggered alerts based on real-time detection rules._
-
-- Shows detected anomalies such as:
-  - Brute-force attempts
-  - Failed logins
-  - Port scans
-- Auto-classified by severity:
-  - 🔴 Critical
-  - 🟠 High
-  - 🟡 Medium
-  - 🟢 Low
-- Auto-refresh and sorted by latest alerts
-
----
-
-### ⚙️ Settings Page (Control Panel)
-
-![Settings Page](frontend/src/assets/Sensiem_Settings.png)
-
-_Manage paths, server IPs, alert settings and backups._
-
-- 🔌 Add or remove log folders/files to monitor
-- 🌐 Update destination server IP/port
-- 🔔 Enable or test notifications (Slack, Telegram, Email)
-- 💾 Backup or restore configuration settings
-
----
-
-## 📦 Architecture Overview
-
-+--------------------+ +------------------------+
-| Log Forwarder |-----> | FastAPI Backend |
-| (Python) | | - Ingest & Parse |
-+--------------------+ | - Alert Engine |
-| - API for Frontend |
-+-----------+------------+
-|
-+----------v----------+
-| React Frontend |
-| - Dashboards |
-| - Search & Logs |
-| - Alert Panel |
-+----------------------+
 
 ---
 
