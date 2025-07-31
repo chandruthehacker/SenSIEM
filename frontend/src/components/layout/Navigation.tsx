@@ -90,7 +90,7 @@ const Navigation = () => {
             ))}
           </motion.div>
           <Link
-            to="https://github.com/chandruthehacker/SenSIEM" // <--- REPLACE WITH YOUR GITHUB REPO LINK
+            to="https://github.com/chandruthehacker/SenSIEM/" // <--- REPLACE WITH YOUR GITHUB REPO LINK
             target="_blank" // Opens in a new tab
             rel="noopener noreferrer" // Security best practice for target="_blank"
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium text-sm hover:shadow-cyber transition-all duration-300 transform hover:scale-105"
