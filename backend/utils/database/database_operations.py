@@ -70,23 +70,26 @@ def delete_log_source(path_to_delete: str, log_type: str) -> dict:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM log_sources WHERE path = ? AND log_type = ? ", (path_to_delete,log_type,))
-        row = cursor.fetchone()
+        # Get the log source and its source_id
+        cursor.execute("SELECT * FROM log_sources WHERE path = ? AND log_type = ?", (path_to_delete, log_type))
+        log_source = cursor.fetchone()
 
-        if not row:
+        if not log_source:
             return {"status": "error", "message": "Log source not found in database"}
-        
-        cursor.execute("SELECT * FROM parsed_logs WHERE file_path = ? AND type = ? ", (path_to_delete,log_type,))
-        row = cursor.fetchone()
 
-        if not row:
-            return {"status": "error", "message": "Parsed Log not found in database"}
+        source_id = log_source["id"]
 
-        cursor.execute("DELETE FROM log_sources WHERE path = ? AND log_type = ? ", (path_to_delete,log_type,))
-        cursor.execute("DELETE FROM parsed_logs WHERE file_path = ? AND type = ? ", (path_to_delete,log_type,))
+        # Delete alerts with this source_id
+        cursor.execute("DELETE FROM alerts WHERE log_source_id = ?", (source_id,))
+
+        # Delete parsed logs with this path and type
+        cursor.execute("DELETE FROM parsed_logs WHERE file_path = ? AND type = ?", (path_to_delete, log_type))
+
+        # Delete the log source
+        cursor.execute("DELETE FROM log_sources WHERE path = ? AND log_type = ?", (path_to_delete, log_type))
+
         conn.commit()
-
-        return {"status": "ok", "message": f"Log source at '{path_to_delete}' deleted successfully"}
+        return {"status": "ok", "message": f"Log source and related alerts deleted successfully for path '{path_to_delete}'"}
 
     except Exception as e:
         return {"status": "error", "message": f"Database error: {str(e)}"}
@@ -183,53 +186,30 @@ def add_parsed_log_to_db(parsed_data):
     finally:
         con.close()
 
-def create_alert(rule_type, severity, message, log_id=None, ip=None, host=None, source=None, status="new"):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+def create_alert(rule_id, severity, message, source_id, log_id=None, ip=None, host=None, source=None, log_level=None, rule_type=None, rule_name=None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-        cursor.execute("""
-            INSERT INTO alerts (
-                rule_type,
-                log_id,
-                alert_time,
-                severity,
-                message,
-                status,
-                acknowledged_at,
-                resolved_at,
-                ip,
-                host,
-                source
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            rule_type,
-            log_id,
-            datetime.utcnow(),
-            severity,
-            message,
-            status,
-            None,       # acknowledged_at
-            None,       # resolved_at
-            ip,
-            host,
-            source
-        ))
+    cursor.execute("""
+        INSERT INTO alerts (
+            rule_id, severity, message, log_source_id, log_id, ip, host, source,
+            log_level, rule_type, rule_name, alert_time, status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        rule_id, severity, message, source_id, log_id, ip, host, source,
+        log_level, rule_type, rule_name, datetime.utcnow(), "new"
+    ))
 
-        conn.commit()
-        return {"status": "success", "message": "Alert created."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    finally:
-        conn.close()
+    conn.commit()
+    conn.close()
 
 def insert_default_detection_rules():
     default_rules = [
         {
             "name": "Brute Force Login (Same IP)",
             "description": "Detects 5+ failed logins from a single IP in 2 minutes.",
-            "rule_type": "brute_force",
+            "rule_type": "Brute-force",
             "log_type": "auth",
             "condition": "failed_login",
             "threshold": 5,
@@ -240,55 +220,57 @@ def insert_default_detection_rules():
         {
             "name": "Suspicious Privilege Escalation",
             "description": "Detects sudden use of sudo/su or privilege escalation attempts.",
-            "rule_type": "privilege_escalation",
+            "rule_type": "Privilege Escalation",
             "log_type": "auth",
             "condition": "sudo,su",
             "threshold": 2,
-            "time_window": 300,  # 5 minutes
+            "time_window": 300,
             "interval_minutes": 2,
-            "active": True
+            "active": False
         },
         {
             "name": "Excessive Error Logs",
             "description": "Detects abnormal volume of ERROR logs from the same process.",
-            "rule_type": "log_level",
+            "rule_type": "Log Level",
             "log_type": "application",
             "condition": "ERROR",
             "threshold": 15,
-            "time_window": 300,  # 5 minutes
+            "time_window": 300,
             "interval_minutes": 2,
-            "active": True
+            "active": False
         },
         {
             "name": "High Volume Web Requests",
             "description": "Detects 200+ web requests from a single IP in 60 seconds.",
-            "rule_type": "web_requests",
+            "rule_type": "Web Requests",
             "log_type": "web",
             "condition": "*",
             "threshold": 200,
-            "time_window": 60,  # 1 minute
+            "time_window": 60,
             "interval_minutes": 1,
-            "active": True
+            "active": False
         },
         {
             "name": "SSH Access From New Geo-Location",
             "description": "Detects SSH login from a location not previously used by the user.",
-            "rule_type": "geo_anomaly",
+            "rule_type": "Geo Anomaly",
             "log_type": "auth",
             "condition": "ssh_login",
             "threshold": 1,
-            "time_window": 600,  # 10 minutes
+            "time_window": 600,
             "interval_minutes": 5,
-            "active": True
+            "active": False
         }
     ]
 
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Ensure table exists
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS detection_rules (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
+            name TEXT UNIQUE,
             description TEXT,
             rule_type TEXT,
             log_type TEXT,
@@ -302,11 +284,11 @@ def insert_default_detection_rules():
         )
     """)
 
+    # Insert missing rules
     for rule in default_rules:
-        cursor.execute("""
-            SELECT COUNT(*) FROM detection_rules WHERE name = ?
-        """, (rule["name"],))
-        if cursor.fetchone()[0] == 0:
+        cursor.execute("SELECT 1 FROM detection_rules WHERE name = ?", (rule["name"],))
+        exists = cursor.fetchone()
+        if not exists:
             cursor.execute("""
                 INSERT INTO detection_rules 
                 (name, description, rule_type, log_type, condition, threshold, time_window, interval_minutes, active, created_at)
@@ -319,5 +301,3 @@ def insert_default_detection_rules():
 
     conn.commit()
     conn.close()
-
-

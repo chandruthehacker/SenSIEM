@@ -66,7 +66,7 @@ export function AlertDetailsDialog({ open, onOpenChange, alert }: AlertDetailsDi
               {alert.severity}
             </Badge>
             <Badge variant="outline">
-              {alert.type}
+              {alert.rule_type}
             </Badge>
             <Badge className={statusColors[alert.status]}>
               {statusLabels[alert.status]}
@@ -88,7 +88,7 @@ export function AlertDetailsDialog({ open, onOpenChange, alert }: AlertDetailsDi
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">Timestamp:</span>
                   </div>
-                  <p className="ml-6 font-mono text-xs">{formatTimestamp(alert.timestamp)}</p>
+                  <p className="ml-6 font-mono text-xs">{formatTimestamp(alert.alert_time)}</p>
                   
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 text-muted-foreground" />
@@ -122,7 +122,7 @@ export function AlertDetailsDialog({ open, onOpenChange, alert }: AlertDetailsDi
                     <Shield className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">Detection Rule:</span>
                   </div>
-                  <p className="ml-6">{alert.rule}</p>
+                  <p className="ml-6">{alert.rule_name}</p>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@ export function AlertDetailsDialog({ open, onOpenChange, alert }: AlertDetailsDi
             <div>
               <h4 className="text-sm font-semibold mb-2">Additional Context</h4>
               <div className="p-3 bg-muted rounded-lg space-y-2 text-sm">
-                <p><span className="text-muted-foreground">Alert Type:</span> {alert.type}</p>
+                <p><span className="text-muted-foreground">Alert Type:</span> {alert.rule_type}</p>
                 <p><span className="text-muted-foreground">Severity Level:</span> {alert.severity}</p>
                 <p><span className="text-muted-foreground">Current Status:</span> {statusLabels[alert.status]}</p>
                 <p><span className="text-muted-foreground">Alert ID:</span> <code className="text-xs bg-background px-1 py-0.5 rounded">{alert.id}</code></p>

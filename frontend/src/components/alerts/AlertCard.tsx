@@ -7,22 +7,22 @@ import { AlertConfirmDialog } from "./AlertConfirmDialog"
 import { AlertDetailsDialog } from "./AlertDetailsDialog"
 
 export interface Alert {
-  id: string
-  timestamp: string
+  id: number
+  alert_time: string
   severity: "Critical" | "High" | "Medium" | "Low"
-  type: string
+  rule_type: string
   message: string
   ip: string
   host?: string
   source: string
   status: "new" | "acknowledged" | "resolved"
-  rule: string
+  rule_name: string
 }
 
 interface AlertCardProps {
   alert: Alert
-  onAcknowledge: (id: string) => void
-  onResolve: (id: string) => void
+  onAcknowledge: (id: number) => void
+  onResolve: (id: number) => void
 }
 
 const severityColors = {
@@ -66,7 +66,7 @@ export function AlertCard({ alert, onAcknowledge, onResolve }: AlertCardProps) {
                     {alert.severity}
                   </Badge>
                   <Badge className="bg-white/10 text-white text-xs font-medium">
-                    {alert.type}
+                    {alert.rule_type}
                   </Badge>
                 </div>
                 <Badge className={statusColors[alert.status]}>
@@ -88,7 +88,7 @@ export function AlertCard({ alert, onAcknowledge, onResolve }: AlertCardProps) {
               <div className="flex items-center gap-2">
                 <Calendar className="h-3 w-3 text-muted-foreground" />
                 <span className="text-zinc-400">Timestamp:</span>
-                <span>{formatTimestamp(alert.timestamp)}</span>
+                <span>{formatTimestamp(alert.alert_time)}</span>
               </div>
               
               <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export function AlertCard({ alert, onAcknowledge, onResolve }: AlertCardProps) {
               <div className="flex items-center gap-2 col-span-2">
                 <Shield className="h-3 w-3 text-muted-foreground" />
                 <span className="text-muted-foreground">Rule:</span>
-                <span>{alert.rule}</span>
+                <span>{alert.rule_name}</span>
               </div>
             </div>
           </div>

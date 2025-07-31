@@ -15,7 +15,7 @@ from backend.detections.detections_runner import run_all_active_rules_sync
 from backend.forwarder.forwarder import start_forwarder
 from backend.parser.log_parser import ingest_logs
 from backend.utils.database.database_operations import add_log_source_to_db, delete_log_source, get_db_connection, get_log_paths
-from backend.utils.database.query import get_filtered_logs, get_logs_from_db, get_top_ips_from_db, getAlerts, getDashBoardmetrics, getGeoSuspiciousIPs, getLogLevelDistribution, getNoisySource, getSystemErrors, getTimeSeries, getTopAlerts
+from backend.utils.database.query import get_filtered_logs, get_logs_from_db, get_top_ips_from_db, getDashBoardmetrics, getGeoSuspiciousIPs, getLogLevelDistribution, getNoisySource, getSystemErrors, getTimeSeries, getTopAlerts
 from backend.utils.log_finder import log_type_find, specific_log_type_find
 from backend.utils.validation import is_log_content_valid, is_valid_ip, is_valid_path, is_valid_port
 from backend.configs.config import load_config, save_config
@@ -181,23 +181,6 @@ async def get_system_errors():
 async def get_logs():
     logs = get_logs_from_db()
     return JSONResponse(content={"logs": logs})
-
-class Alert(BaseModel):
-    id: int
-    type: str
-    description: str
-    timestamp: str
-    source: str
-    severity: str
-    status: str
-
-@app.get("/api/get-alerts", response_model=List[Alert])
-async def get_alerts():
-    try:
-        alerts = getAlerts()
-        return JSONResponse(content=alerts)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching System Errors: {str(e)}")
 
 @app.get("/api/get-settings")
 async def getSettings():
@@ -441,6 +424,7 @@ async def ingest_log(
         
         if detected_type != "unknown":
             ingest_logs(text, detected_type, path)
+            run_all_active_rules_sync()
             return {"status": "success", "message": "Valid logs ingested.", "detected_type": detected_type}
 
         return {"status": "error", "message": "Invalid log content for selected type.", "detected_type": detected_type}
@@ -504,6 +488,63 @@ async def update_detection_rule(rule_id: int, data: RuleToggleRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update rule: {e}")
 
+    finally:
+        conn.close()
+
+@app.get("/api/get-alerts")
+async def get_alerts():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM alerts ORDER BY alert_time DESC")
+        rows = cursor.fetchall()
+        
+        if not rows:
+            return HTTPException(status_code=404, detail="Alerts not found...")
+
+        alerts = [dict(row) for row in rows]
+        return JSONResponse(status_code=200, content=alerts)
+    except Exception as e:
+        return HTTPException(status_code=500, detail=f"Unexpected error occurred: {e}")
+
+@app.post("/api/alerts/{alert_id}/acknowledge")
+async def acknowledge_alert(alert_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE alerts SET status = ?, acknowledged_at = ? WHERE id = ?",
+            ("acknowledged", datetime.utcnow(), alert_id),
+        )
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Alert not found")
+
+        conn.commit()
+        return {"status": "success", "message": "Alert acknowledged"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@app.post("/api/alerts/{alert_id}/resolve")
+async def resolve_alert(alert_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE alerts SET status = ?, resolved_at = ? WHERE id = ?",
+            ("resolved", datetime.utcnow(), alert_id),
+        )
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Alert not found")
+
+        conn.commit()
+        return {"status": "success", "message": "Alert resolved"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
 

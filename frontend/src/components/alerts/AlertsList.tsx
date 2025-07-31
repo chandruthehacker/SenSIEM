@@ -4,69 +4,71 @@ import { AlertFilters, FilterState } from "./AlertFilters"
 import { Button } from "@/components/ui/button"
 import { Loader2, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import backendConfig from "@/configs/config.json";
+import axios from "axios"
 
 // Mock data - replace with actual API calls
-const mockAlerts: Alert[] = [
-  {
-    id: "ALT-2025-001",
-    timestamp: "2025-07-28T14:23:00Z",
-    severity: "Critical",
-    type: "Brute-force",
-    message: "Multiple failed SSH login attempts detected from external IP. 15 failed attempts in 2 minutes.",
-    ip: "192.168.1.100",
-    host: "kali.local",
-    source: "auth.log",
-    status: "new",
-    rule: "SSH Brute-force Detector"
-  },
-  {
-    id: "ALT-2025-002",
-    timestamp: "2025-07-28T14:18:00Z",
-    severity: "High",
-    type: "Suspicious Login",
-    message: "Login from unusual geographic location detected for user admin.",
-    ip: "203.0.113.42",
-    host: "web-server-01",
-    source: "access.log",
-    status: "acknowledged",
-    rule: "Geographic Anomaly Detection"
-  },
-  {
-    id: "ALT-2025-003",
-    timestamp: "2025-07-28T14:15:00Z",
-    severity: "Medium",
-    type: "Port Scan",
-    message: "Port scanning activity detected from external source targeting multiple services.",
-    ip: "198.51.100.25",
-    source: "firewall.log",
-    status: "resolved",
-    rule: "Port Scan Detection"
-  },
-  {
-    id: "ALT-2025-004",
-    timestamp: "2025-07-28T14:10:00Z",
-    severity: "High",
-    type: "Malware",
-    message: "Malicious file detected in email attachment. Hash matches known threat database.",
-    ip: "172.16.0.50",
-    host: "mail-server",
-    source: "antivirus.log",
-    status: "new",
-    rule: "Malware Hash Detection"
-  },
-  {
-    id: "ALT-2025-005",
-    timestamp: "2025-07-28T14:05:00Z",
-    severity: "Low",
-    type: "Suspicious Login",
-    message: "Multiple login attempts from same IP within short timeframe.",
-    ip: "10.0.0.15",
-    host: "internal-workstation",
-    source: "auth.log",
-    status: "acknowledged",
-    rule: "Login Frequency Monitor"
-  },
-]
+// const mockAlerts: Alert[] = [
+//   {
+//     id: "ALT-2025-001",
+//     timestamp: "2025-07-28T14:23:00Z",
+//     severity: "Critical",
+//     type: "Brute-force",
+//     message: "Multiple failed SSH login attempts detected from external IP. 15 failed attempts in 2 minutes.",
+//     ip: "192.168.1.100",
+//     host: "kali.local",
+//     source: "auth.log",
+//     status: "new",
+//     rule: "SSH Brute-force Detector"
+//   },
+//   {
+//     id: "ALT-2025-002",
+//     timestamp: "2025-07-28T14:18:00Z",
+//     severity: "High",
+//     type: "Suspicious Login",
+//     message: "Login from unusual geographic location detected for user admin.",
+//     ip: "203.0.113.42",
+//     host: "web-server-01",
+//     source: "access.log",
+//     status: "acknowledged",
+//     rule: "Geographic Anomaly Detection"
+//   },
+//   {
+//     id: "ALT-2025-003",
+//     timestamp: "2025-07-28T14:15:00Z",
+//     severity: "Medium",
+//     type: "Port Scan",
+//     message: "Port scanning activity detected from external source targeting multiple services.",
+//     ip: "198.51.100.25",
+//     source: "firewall.log",
+//     status: "resolved",
+//     rule: "Port Scan Detection"
+//   },
+//   {
+//     id: "ALT-2025-004",
+//     timestamp: "2025-07-28T14:10:00Z",
+//     severity: "High",
+//     type: "Malware",
+//     message: "Malicious file detected in email attachment. Hash matches known threat database.",
+//     ip: "172.16.0.50",
+//     host: "mail-server",
+//     source: "antivirus.log",
+//     status: "new",
+//     rule: "Malware Hash Detection"
+//   },
+//   {
+//     id: "ALT-2025-005",
+//     timestamp: "2025-07-28T14:05:00Z",
+//     severity: "Low",
+//     type: "Suspicious Login",
+//     message: "Multiple login attempts from same IP within short timeframe.",
+//     ip: "10.0.0.15",
+//     host: "internal-workstation",
+//     source: "auth.log",
+//     status: "acknowledged",
+//     rule: "Login Frequency Monitor"
+//   },
+// ]
 
 export function AlertsList() {
   const [alerts, setAlerts] = useState<Alert[]>([])
@@ -85,24 +87,30 @@ export function AlertsList() {
   })
 
   // Simulate API call
-  const fetchAlerts = async () => {
-    setIsLoading(true)
-    try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 800))
-      setAlerts(mockAlerts)
-      setError(null)
-    } catch (err) {
-      setError("Failed to fetch alerts")
-      toast({
-        title: "Error",
-        description: "Failed to fetch alerts. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
+const fetchAlerts = async () => {
+  setIsLoading(true)
+  try {
+    const response = await axios.get(`${backendConfig.apiUrl}/get-alerts`)
+    const alerts = response.data
+    console.log("Fetched alerts:", alerts)
+
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    setAlerts(alerts) // ✅ Use real backend alerts
+    setError(null)
+  } catch (err) {
+    console.error("Error fetching alerts:", err)
+    setError("Failed to fetch alerts")
+    toast({
+      title: "Error",
+      description: "Failed to fetch alerts. Please try again.",
+      variant: "destructive",
+    })
+  } finally {
+    setIsLoading(false)
   }
+}
+
 
   // Filter and sort alerts
   useEffect(() => {
@@ -115,7 +123,7 @@ export function AlertsList() {
         alert.message.toLowerCase().includes(searchLower) ||
         alert.ip.includes(searchLower) ||
         alert.host?.toLowerCase().includes(searchLower) ||
-        alert.type.toLowerCase().includes(searchLower)
+        alert.rule_type.toLowerCase().includes(searchLower)
       )
     }
 
@@ -128,7 +136,7 @@ export function AlertsList() {
     }
 
     if (filters.type !== "all") {
-      filtered = filtered.filter(alert => alert.type === filters.type)
+      filtered = filtered.filter(alert => alert.rule_type === filters.type)
     }
 
     // Apply sorting
@@ -163,49 +171,60 @@ export function AlertsList() {
     resolved: alerts.filter(a => a.status === "resolved").length,
   }
 
-  const handleAcknowledge = async (id: string) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setAlerts(prev => prev.map(alert =>
-        alert.id === id ? { ...alert, status: "acknowledged" as const } : alert
-      ))
-      
-      toast({
-        title: "Alert Acknowledged",
-        description: `Alert ${id} has been acknowledged successfully.`,
-      })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to acknowledge alert. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }
+const handleAcknowledge = async (id: number) => {
+  try {
+    const res = await fetch(`${backendConfig.apiUrl}/alerts/${id}/acknowledge`, {
+      method: "POST",
+    });
 
-  const handleResolve = async (id: string) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setAlerts(prev => prev.map(alert =>
-        alert.id === id ? { ...alert, status: "resolved" as const } : alert
-      ))
-      
-      toast({
-        title: "Alert Resolved",
-        description: `Alert ${id} has been resolved successfully.`,
-      })
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to resolve alert. Please try again.",
-        variant: "destructive",
-      })
-    }
+    if (!res.ok) throw new Error("Acknowledge failed");
+
+    setAlerts(prev =>
+      prev.map(alert =>
+        alert.id === id ? { ...alert, status: "acknowledged" as const } : alert
+      )
+    );
+
+    toast({
+      title: "Alert Acknowledged",
+      description: `Alert ${id} has been acknowledged successfully.`,
+    });
+  } catch (err) {
+    toast({
+      title: "Error",
+      description: "Failed to acknowledge alert. Please try again.",
+      variant: "destructive",
+    });
   }
+};
+
+const handleResolve = async (id: number) => {
+  try {
+    const res = await fetch(`${backendConfig.apiUrl}/alerts/${id}/resolve`, {
+      method: "POST",
+    });
+
+    if (!res.ok) throw new Error("Resolve failed");
+
+    setAlerts(prev =>
+      prev.map(alert =>
+        alert.id === id ? { ...alert, status: "resolved" as const } : alert
+      )
+    );
+
+    toast({
+      title: "Alert Resolved",
+      description: `Alert ${id} has been resolved successfully.`,
+    });
+  } catch (err) {
+    toast({
+      title: "Error",
+      description: "Failed to resolve alert. Please try again.",
+      variant: "destructive",
+    });
+  }
+};
+
 
   useEffect(() => {
     fetchAlerts()

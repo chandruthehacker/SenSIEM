@@ -21,11 +21,6 @@ DETECTION_FUNCTIONS = {
 }
 
 def run_all_active_rules_sync():
-    """
-    Iterates through all active detection rules and executes their corresponding
-    detection functions if they are due for execution.
-    This function is synchronous and uses direct sqlite3 connections.
-    """
     now = datetime.utcnow()
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -53,7 +48,13 @@ def run_all_active_rules_sync():
                         # Pass rule parameters dynamically based on rule_type
                         # Ensure parameters match the function signatures
                         if rule_type == "brute_force":
-                            detection_function(rule["id"], rule["log_type"], rule["time_window"], rule["threshold"])
+                            detection_function(
+                                rule["id"],
+                                rule["log_type"],
+                                rule["time_window"],
+                                rule["threshold"],
+                                rule["last_run"]  # Pass the last_run value to the detection function
+                            )
                         elif rule_type == "anomaly":
                             detection_function(rule["id"], rule["log_type"])
                         elif rule_type == "failed_login":

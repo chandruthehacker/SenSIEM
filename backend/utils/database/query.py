@@ -392,33 +392,5 @@ def getSystemErrors():
 
     return results
 
-def getAlerts():
-    conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-
-    # Fetch only rows where alert is explicitly '1' and log_level is 'ALERT'
-    cursor.execute("""
-        SELECT 
-            id,
-            log_level,
-            message AS description,
-            timestamp,
-            type,
-            CASE 
-                WHEN log_level IN ('CRITICAL', 'ERROR', 'ALERT') THEN 'high'
-                WHEN log_level = 'WARNING' THEN 'medium'
-                ELSE 'low'
-            END AS severity,
-            'active' AS status
-        FROM parsed_logs
-        WHERE TRIM(alert) = '1' AND log_level = 'ALERT'
-        ORDER BY datetime(timestamp) DESC
-        LIMIT 50;
-    """)
-
-    alerts = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return alerts
 
 
