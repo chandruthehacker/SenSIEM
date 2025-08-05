@@ -82,34 +82,48 @@ export function AlertsList() {
     status: "all",
     severity: "all",
     type: "all",
-    sortBy: "timestamp",
-    sortOrder: "desc",
+    sortBy: "alert_time",   // ✅ shows latest first
+    sortOrder: "desc",     // ✅ descending order
   })
 
   // Simulate API call
-const fetchAlerts = async () => {
-  setIsLoading(true)
-  try {
-    const response = await axios.get(`${backendConfig.apiUrl}/get-alerts`)
-    const alerts = response.data
-    console.log("Fetched alerts:", alerts)
+  const fetchAlerts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${backendConfig.apiUrl}/get-alerts`);
+      
+      const alerts = Array.isArray(response.data) ? response.data : [];
 
-    await new Promise(resolve => setTimeout(resolve, 800))
+      console.log("Fetched alerts:", alerts);
 
-    setAlerts(alerts) // ✅ Use real backend alerts
-    setError(null)
-  } catch (err) {
-    console.error("Error fetching alerts:", err)
-    setError("Failed to fetch alerts")
-    toast({
-      title: "Error",
-      description: "Failed to fetch alerts. Please try again.",
-      variant: "destructive",
-    })
-  } finally {
-    setIsLoading(false)
-  }
-}
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      if (response.status !== 200 || alerts.length === 0) {
+        setAlerts([]); // fallback to empty
+        toast({
+          title: "No Alerts",
+          description: "No alerts found or failed to retrieve data.",
+          variant: "default", // or "destructive" if you prefer
+        });
+      } else {
+        setAlerts(alerts); // ✅ Use backend alerts
+      }
+
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching alerts:", err);
+      setAlerts([]); // fallback to empty
+      setError("Failed to fetch alerts");
+      toast({
+        title: "Error",
+        description: "Failed to fetch alerts. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
 
   // Filter and sort alerts
@@ -141,24 +155,33 @@ const fetchAlerts = async () => {
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aValue: any = a[filters.sortBy as keyof Alert]
-      let bValue: any = b[filters.sortBy as keyof Alert]
+      let aValue: any;
+      let bValue: any;
 
-      if (filters.sortBy === "timestamp") {
-        aValue = new Date(aValue).getTime()
-        bValue = new Date(bValue).getTime()
+      if (filters.sortBy === "alert_time") {
+        // ✅ FIX: Use 'alert_time' property for sorting by timestamp
+        aValue = new Date(a.alert_time).getTime();
+        bValue = new Date(b.alert_time).getTime();
       } else if (filters.sortBy === "severity") {
-        const severityOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 }
-        aValue = severityOrder[aValue as keyof typeof severityOrder]
-        bValue = severityOrder[bValue as keyof typeof severityOrder]
+        const severityOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 };
+        aValue = severityOrder[a.severity as keyof typeof severityOrder];
+        bValue = severityOrder[b.severity as keyof typeof severityOrder];
+      } else {
+        // For other string-based sorts
+        const aProp = a[filters.sortBy as keyof Alert] ?? "";
+        const bProp = b[filters.sortBy as keyof Alert] ?? "";
+        aValue = String(aProp).toLowerCase();
+        bValue = String(bProp).toLowerCase();
       }
 
+      // Correctly handle comparison for asc/desc order
       if (filters.sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
       } else {
-        return aValue < bValue ? 1 : -1
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
       }
-    })
+    });
+
 
     setFilteredAlerts(filtered)
   }, [alerts, filters])

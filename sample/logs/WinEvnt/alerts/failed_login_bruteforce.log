@@ -1,0 +1,13 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System><EventID>4625</EventID><TimeCreated SystemTime="2025-08-02T21:29:00.000000000Z"/></System>
+    <EventData>
+        <Data Name="SubjectUserSid">S-1-5-18</Data><Data Name="TargetUserName">Administrator</Data>
+        <Data Name="IpAddress">10.0.0.150</Data><Data Name="IpPort">50500</Data>
+    </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System><EventID>4625</EventID><TimeCreated SystemTime="2025-08-02T21:29:05.000000000Z"/></System>
+    <EventData>
+        <Data Name="TargetUserName">Administrator</Data><Data Name="IpAddress">10.0.0.150</Data>
+    </EventData>
+</Event>

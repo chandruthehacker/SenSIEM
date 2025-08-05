@@ -71,7 +71,10 @@ def delete_log_source(path_to_delete: str, log_type: str) -> dict:
         cursor = conn.cursor()
 
         # Get the log source and its source_id
-        cursor.execute("SELECT * FROM log_sources WHERE path = ? AND log_type = ?", (path_to_delete, log_type))
+        cursor.execute(
+            "SELECT * FROM log_sources WHERE path = ? AND log_type = ?",
+            (path_to_delete, log_type)
+        )
         log_source = cursor.fetchone()
 
         if not log_source:
@@ -79,17 +82,58 @@ def delete_log_source(path_to_delete: str, log_type: str) -> dict:
 
         source_id = log_source["id"]
 
-        # Delete alerts with this source_id
+        # Step 1: Get all parsed log IDs that are about to be deleted
+        cursor.execute(
+            "SELECT id FROM parsed_logs WHERE file_path = ? AND type = ?",
+            (path_to_delete, log_type)
+        )
+        deleting_log_ids = [row["id"] for row in cursor.fetchall()]
+
+        # Step 2: Find detection rules where last_run_id is in the logs being deleted
+        if deleting_log_ids:
+            placeholders = ",".join(["?"] * len(deleting_log_ids))
+            cursor.execute(
+                f"""
+                SELECT id, last_run_id FROM detection_rules
+                WHERE last_run_id IN ({placeholders}) AND log_type = ?
+                """,
+                (*deleting_log_ids, log_type)
+            )
+            affected_rules = cursor.fetchall()
+        else:
+            affected_rules = []
+
+        # Step 3: Delete alerts and logs and log source
         cursor.execute("DELETE FROM alerts WHERE log_source_id = ?", (source_id,))
+        cursor.execute(
+            "DELETE FROM parsed_logs WHERE file_path = ? AND type = ?",
+            (path_to_delete, log_type)
+        )
+        cursor.execute(
+            "DELETE FROM log_sources WHERE path = ? AND log_type = ?",
+            (path_to_delete, log_type)
+        )
 
-        # Delete parsed logs with this path and type
-        cursor.execute("DELETE FROM parsed_logs WHERE file_path = ? AND type = ?", (path_to_delete, log_type))
+        # Step 4: If affected_rules exist, update their last_run_id to new latest log or NULL
+        if affected_rules:
+            cursor.execute(
+                "SELECT id FROM parsed_logs WHERE file_path = ? AND type = ? ORDER BY id DESC LIMIT 1",
+                (path_to_delete, log_type)
+            )
+            new_last_log = cursor.fetchone()
+            new_last_run_id = new_last_log["id"] if new_last_log else None
 
-        # Delete the log source
-        cursor.execute("DELETE FROM log_sources WHERE path = ? AND log_type = ?", (path_to_delete, log_type))
+            for rule in affected_rules:
+                cursor.execute(
+                    "UPDATE detection_rules SET last_run_id = ? WHERE id = ?",
+                    (new_last_run_id, rule["id"])
+                )
 
         conn.commit()
-        return {"status": "ok", "message": f"Log source and related alerts deleted successfully for path '{path_to_delete}'"}
+        return {
+            "status": "ok",
+            "message": f"Log source and related alerts deleted successfully for path '{path_to_delete}'"
+        }
 
     except Exception as e:
         return {"status": "error", "message": f"Database error: {str(e)}"}
@@ -208,7 +252,7 @@ def insert_default_detection_rules():
     default_rules = [
         {
             "name": "Brute Force Login (Same IP)",
-            "description": "Detects 5+ failed logins from a single IP in 2 minutes.",
+            "description": "Detects 5 or more failed login attempts from a single IP within 2 minutes.",
             "rule_type": "Brute-force",
             "log_type": "auth",
             "condition": "failed_login",
@@ -218,50 +262,271 @@ def insert_default_detection_rules():
             "active": True
         },
         {
-            "name": "Suspicious Privilege Escalation",
-            "description": "Detects sudden use of sudo/su or privilege escalation attempts.",
-            "rule_type": "Privilege Escalation",
+            "name": "Success After Failed Logins",
+            "description": "Detects successful login immediately after multiple failed attempts, indicating a potential brute force attempt.",
+            "rule_type": "Success-after-fail",
             "log_type": "auth",
-            "condition": "sudo,su",
-            "threshold": 2,
+            "condition": "mixed_login",
+            "threshold": 3,
+            "time_window": 180,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Account Brute Force (Same User)",
+            "description": "Detects repeated failed logins for the same user account, indicating password guessing.",
+            "rule_type": "Account Brute-force",
+            "log_type": "auth",
+            "condition": "failed_login",
+            "threshold": 5,
+            "time_window": 180,
+            "interval_minutes": 2,
+            "active": False
+        },
+        {
+            "name": "Suspicious Process Execution",
+            "description": "Detects execution of suspicious processes such as netcat or nmap.",
+            "rule_type": "Suspicious Process",
+            "log_type": "process",
+            "condition": "nc,ncat,nmap,hydra",
+            "threshold": 1,
             "time_window": 300,
             "interval_minutes": 2,
             "active": False
         },
         {
-            "name": "Excessive Error Logs",
-            "description": "Detects abnormal volume of ERROR logs from the same process.",
-            "rule_type": "Log Level",
-            "log_type": "application",
-            "condition": "ERROR",
-            "threshold": 15,
+            "name": "Odd Hour Login Detected",
+            "description": "Detects successful logins outside of business hours (e.g., between 12 AM and 5 AM).",
+            "rule_type": "Odd Hour Login",
+            "log_type": "auth",
+            "condition": "successful_login",
+            "threshold": 1,
             "time_window": 300,
+            "interval_minutes": 5,
+            "active": False
+        },
+        {
+            "name": "Account Spray Attack",
+            "description": "Detects multiple failed logins using many usernames from a single IP (spray attack).",
+            "rule_type": "Account Spray",
+            "log_type": "auth",
+            "condition": "failed_login",
+            "threshold": 10,
+            "time_window": 180,
             "interval_minutes": 2,
             "active": False
         },
         {
-            "name": "High Volume Web Requests",
-            "description": "Detects 200+ web requests from a single IP in 60 seconds.",
-            "rule_type": "Web Requests",
-            "log_type": "web",
-            "condition": "*",
-            "threshold": 200,
-            "time_window": 60,
+            "name": "Access Denied Flood",
+            "description": "Detects a flood of access denied logs from a user or IP in a short time.",
+            "rule_type": "Access Denied Flood",
+            "log_type": "auth",
+            "condition": "access_denied",
+            "threshold": 10,
+            "time_window": 120,
             "interval_minutes": 1,
             "active": False
         },
         {
-            "name": "SSH Access From New Geo-Location",
-            "description": "Detects SSH login from a location not previously used by the user.",
-            "rule_type": "Geo Anomaly",
-            "log_type": "auth",
-            "condition": "ssh_login",
+            "name": "Syslog Unauthorized Access",
+            "description": "Detects a high number of 'authentication failure' logs from a single source.",
+            "rule_type": "Syslog Unauthorized Access",
+            "log_type": "syslog",
+            "condition": "authentication failure",
+            "threshold": 5,
+            "time_window": 300,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Syslog Privilege Escalation",
+            "description": "Detects logs indicating failed sudo or su attempts.",
+            "rule_type": "Syslog Privilege Escalation",
+            "log_type": "syslog",
+            "condition": "sudo,su",
             "threshold": 1,
+            "time_window": 300,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Syslog Service Restart Flood",
+            "description": "Detects frequent restarts of a single service in a short time window, indicating instability or attack.",
+            "rule_type": "Syslog Service Restart Flood",
+            "log_type": "syslog",
+            "condition": "restarting,stopping",
+            "threshold": 3,
             "time_window": 600,
             "interval_minutes": 5,
             "active": False
+        },
+        {
+            "name": "Web Application Attack",
+            "description": "Detects SQL injection, local file inclusion, or directory traversal patterns in web requests.",
+            "rule_type": "Web Application Attack",
+            "log_type": "apache",
+            "condition": "' OR 1=1,../../,proc/self/environ",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "High 404 Detection",
+            "description": "Detects a high number of 404 (Not Found) errors from a single IP, a sign of content or vulnerability scanning.",
+            "rule_type": "High 404 Detection",
+            "log_type": "apache",
+            "condition": "404",
+            "threshold": 20,
+            "time_window": 600,
+            "interval_minutes": 5,
+            "active": True
+        },
+        {
+            "name": "Windows Failed Login Brute Force",
+            "description": "Detects a high number of failed logins (Event ID 4625) from a single IP on a Windows machine.",
+            "rule_type": "Windows Failed Login Brute Force",
+            "log_type": "windows_event",
+            "condition": "4625",
+            "threshold": 10,
+            "time_window": 180,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Windows Audit Log Cleared",
+            "description": "Detects when the Windows Security Event Log has been cleared (Event ID 1102), a critical security event.",
+            "rule_type": "Windows Audit Log Cleared",
+            "log_type": "windows_event",
+            "condition": "1102",
+            "threshold": 1,
+            "time_window": 300,
+            "interval_minutes": 5,
+            "active": False
+        },
+        {
+            "name": "Firewall Port Scan Detection",
+            "description": "Detects an IP attempting to connect to 10 or more different ports in a short time, indicating a port scan.",
+            "rule_type": "Firewall Port Scan Detection",
+            "log_type": "firewall",
+            "condition": "port scan",
+            "threshold": 10,
+            "time_window": 180,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "IDS/IPS Exploit Detection",
+            "description": "Alerts when the IDS/IPS detects traffic matching a known exploit or malware signature.",
+            "rule_type": "IDS/IPS Exploit Detection",
+            "log_type": "ids_ips",
+            "condition": "CVE,Exploit,Malware",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "VPN Unusual Login Hours",
+            "description": "Detects successful VPN logins outside of normal working hours (10 PM - 6 AM).",
+            "rule_type": "VPN Unusual Login Hours",
+            "log_type": "vpn",
+            "condition": "connected",
+            "threshold": 1,
+            "time_window": 3600,
+            "interval_minutes": 10,
+            "active": False
+        },
+        {
+            "name": "Cloud IAM Changes",
+            "description": "Detects changes to cloud IAM policies or creation of new credentials, a sign of account compromise.",
+            "rule_type": "Cloud IAM Changes",
+            "log_type": "cloud",
+            "condition": "create-policy,update-policy,delete-policy",
+            "threshold": 1,
+            "time_window": 300,
+            "interval_minutes": 5,
+            "active": True
+        },
+        {
+            "name": "DNS Tunneling Detection",
+            "description": "Detects unusually long DNS queries, which can be a sign of data exfiltration or command and control traffic.",
+            "rule_type": "DNS Tunneling Detection",
+            "log_type": "dns",
+            "condition": "100",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "Antivirus Threat Detection",
+            "description": "Alerts on any antivirus logs indicating malware detection or a quarantine failure.",
+            "rule_type": "Antivirus Threat Detection",
+            "log_type": "antivirus",
+            "condition": "malware detected,quarantine failed",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "Zeek Suspicious User Agent",
+            "description": "Detects web traffic with user agents known to be associated with scanners or bots.",
+            "rule_type": "Zeek Suspicious User Agent",
+            "log_type": "zeek",
+            "condition": "nmap,nikto,sqlmap",
+            "threshold": 1,
+            "time_window": 300,
+            "interval_minutes": 5,
+            "active": True
+        },
+        {
+            "name": "Email Phishing Detection",
+            "description": "Identifies emails with suspicious subjects, which may be part of a phishing campaign.",
+            "rule_type": "Email Phishing Detection",
+            "log_type": "email",
+            "condition": "invoice,urgent,password change",
+            "threshold": 1,
+            "time_window": 300,
+            "interval_minutes": 5,
+            "active": True
+        },
+        {
+            "name": "WAF Blocked SQLi/XSS",
+            "description": "Alerts when the Web Application Firewall blocks a request containing SQLi or XSS patterns.",
+            "rule_type": "WAF Blocked SQLi/XSS",
+            "log_type": "waf",
+            "condition": "blocked",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
+        },
+        {
+            "name": "Database Unauthorized Access",
+            "description": "Detects failed login attempts or access denied errors in database logs.",
+            "rule_type": "Database Unauthorized Access",
+            "log_type": "database",
+            "condition": "authentication failure,access denied",
+            "threshold": 3,
+            "time_window": 180,
+            "interval_minutes": 2,
+            "active": True
+        },
+        {
+            "name": "Proxy Malware URL Access",
+            "description": "Detects attempts to access URLs known to host malware or command and control servers.",
+            "rule_type": "Proxy Malware URL Access",
+            "log_type": "proxy",
+            "condition": "bad.com,malware.net",
+            "threshold": 1,
+            "time_window": 60,
+            "interval_minutes": 1,
+            "active": True
         }
     ]
+
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -277,10 +542,11 @@ def insert_default_detection_rules():
             condition TEXT,
             threshold INTEGER,
             time_window INTEGER,
-            interval_minutes INTEGER,
-            active BOOLEAN,
-            last_run TIMESTAMP,
-            created_at TIMESTAMP
+            interval_minutes INTEGER DEFAULT 5,
+            active BOOLEAN DEFAULT 1,
+            last_run_id INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (last_run_id) REFERENCES parsed_logs(id)
         )
     """)
 

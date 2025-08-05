@@ -16,12 +16,12 @@ interface LogEntry {
   level: string;
   message: string;
   host?: string;
-  path?: string;
-  user?: string;
+  file_path?: string;
+  username?: string;
   process?: string;
   from_host?: string;
-  source: string;
-  raw: string;
+  type: string;
+  raw_log: string;
   pid?: string | number;
   metadata?: Record<string, string | number>;
 }
@@ -43,11 +43,23 @@ const Logs = () => {
         ...log,
         level: log.log_level ?? log.level ?? "INFO",
         metadata: {
-          host: log.host || "N/A",
-          user: log.user || "N/A",
-          path: log.path || "N/A",
-          process: log.process || "N/A",
-          from_host: log.from_host || "N/A",
+          host: log.host,
+          username: log.username,
+          file_path: log.file_path,
+          process: log.process,
+          from_host: log.from_host,
+          source_IP: log.src_ip,
+          destination_IP: log.dest_ip,
+          status_code: log.status_code,
+          url: log.url,
+          method: log.method,
+          protocol: log.protocol,
+          action: log.action,
+          user_agent: log.user_agent,
+          device: log.device,
+          mail_subject: log.mail_subject,
+          file_hash: log.file_hash,
+          tags: log.tags
         },
       }));
       setLogs(logsWithMetadata);
@@ -62,7 +74,7 @@ const Logs = () => {
 
   const filteredLogs = logs.filter((log) =>
     log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.source.toLowerCase().includes(searchTerm.toLowerCase())
+    log.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
@@ -173,7 +185,11 @@ const Logs = () => {
                           </span>
                         )}
                         <span className="text-xs text-primary group-hover:text-foreground transition-colors">
-                          {log.source}
+                          {log.type}
+                        </span>
+
+                        <span className="text-xs text-primary group-hover:text-foreground transition-colors">
+                          Log ID: {log.id}
                         </span>
                       </div>
                       <p className="text-md font-mono text-foreground group-hover:text-white transition-colors line-clamp-3">
@@ -215,7 +231,7 @@ const Logs = () => {
 
         {/* Log Detail Modal */}
         {selectedLog && (
-          <Card className="fixed inset-0 z-50 m-6 max-h-[90vh] overflow-y-auto animate-fade-in bg-background shadow-xl">
+          <Card className="fixed inset-0 z-50 m-6 max-h-[90vh] max-w-[95vw] mx-auto overflow-y-auto animate-fade-in bg-background shadow-xl">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -257,7 +273,7 @@ const Logs = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Source:</span>
-                      <span className="font-mono">{selectedLog.source}</span>
+                      <span className="font-mono">{selectedLog.type}</span>
                     </div>
                     {selectedLog.pid && (
                       <div className="flex justify-between">
@@ -271,7 +287,7 @@ const Logs = () => {
                   <h4 className="font-semibold text-foreground mb-2">Metadata</h4>
                   <div className="space-y-2 text-sm">
                     {selectedLog.metadata ? (
-                      Object.entries(selectedLog.metadata).map(([key, value]) => (
+                      Object.entries(selectedLog.metadata).filter(([_, value]) => value != null).map(([key, value]) => (
                         <div key={key} className="flex justify-between">
                           <span className="text-muted-foreground capitalize">
                             {key.replace("_", " ")}:
@@ -298,7 +314,7 @@ const Logs = () => {
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Raw Log Entry</h4>
                 <div className="p-3 rounded-lg bg-secondary/20 border border-border">
-                  <p className="font-mono text-sm text-muted-foreground">{selectedLog.raw}</p>
+                  <p className="font-mono text-sm text-muted-foreground">{selectedLog.raw_log}</p>
                 </div>
               </div>
             </CardContent>

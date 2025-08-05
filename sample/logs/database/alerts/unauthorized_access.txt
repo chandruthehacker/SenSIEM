@@ -1,0 +1,1 @@
+Aug  2 21:40:00 db-prod-01.corp mariadb[5678]: [Warning] Access denied for user 'dba_user'@'192.168.1.30' (using password: NO)

@@ -17,6 +17,7 @@ export interface Alert {
   source: string
   status: "new" | "acknowledged" | "resolved"
   rule_name: string
+  timestamp: string
 }
 
 interface AlertCardProps {

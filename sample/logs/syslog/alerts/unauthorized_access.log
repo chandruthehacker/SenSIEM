@@ -1,0 +1,3 @@
+<134>Aug  2 21:24:00 web-server-01 sshd[12345]: Failed password for user 'admin' from 192.168.1.100 port 50000 ssh2
+<134>Aug  2 21:24:05 web-server-01 sshd[12345]: Failed password for user 'admin' from 192.168.1.100 port 50001 ssh2
+<134>Aug  2 21:24:10 web-server-01 sshd[12345]: Failed password for user 'root' from 192.168.1.100 port 50002 ssh2

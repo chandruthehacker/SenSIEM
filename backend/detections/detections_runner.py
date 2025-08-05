@@ -1,92 +1,201 @@
-from datetime import datetime, timedelta
+from functools import partial
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 import sqlite3
-from backend.detections.detections import (
-    run_brute_force_detection,
-    run_anomaly_detection,
-    run_failed_login_detection,
-    run_port_scan_detection,
-    run_geo_location_alerts,
-    run_custom_pattern_detection
-)
 from backend.utils.database.database_operations import get_db_connection
+scheduler = BackgroundScheduler()
+
+# --- Detection Imports ---
+from backend.detections.detections import (
+    # Existing Functions
+    run_brute_force_detection,
+    run_success_after_fail_detection,
+    run_account_brute_force_detection,
+    run_suspicious_process_detection,
+    run_odd_hour_login_detection,
+    run_account_spray_detection,
+    run_access_denied_flood_detection,
+
+    # Syslog
+    run_syslog_unauthorized_access,
+    run_syslog_privilege_escalation,
+    run_syslog_service_restart_flood,
+
+    # Apache / Nginx Logs
+    run_web_app_attack,
+    run_high_404_detection,
+
+    # Windows Event Logs
+    run_windows_failed_login,
+    run_windows_audit_log_cleared,
+
+    # Firewall Logs
+    run_firewall_port_scan_detection,
+
+    # IDS/IPS Logs
+    run_ids_exploit_detection,
+
+    # VPN Logs
+    run_vpn_unusual_login_hours,
+
+    # Cloud Logs
+    run_cloud_iam_changes,
+
+    # DNS Logs
+    run_dns_tunneling_detection,
+
+    # Antivirus Logs
+    run_antivirus_detection,
+
+    # Zeek Logs
+    run_zeek_suspicious_user_agent,
+
+    # Email Logs
+    run_email_phishing_detection,
+
+    # Web Application Firewall (WAF) Logs
+    run_waf_sqli_xss_detection,
+
+    # Database Logs
+    run_db_unauthorized_access,
+
+    # Proxy Logs
+    run_proxy_malware_url_access,
+)
 
 DETECTION_FUNCTIONS = {
-    "brute_force": run_brute_force_detection,
-    "anomaly": run_anomaly_detection,
-    "failed_login": run_failed_login_detection,
-    "port_scan": run_port_scan_detection,
-    "geo_location": run_geo_location_alerts,
-    "custom_pattern": run_custom_pattern_detection,
-    # Add more detection types as needed
+    # Existing Detections
+    "Brute-force": run_brute_force_detection,
+    "Success-after-fail": run_success_after_fail_detection,
+    "Account Brute-force": run_account_brute_force_detection,
+    "Suspicious Process": run_suspicious_process_detection,
+    "Odd Hour Login": run_odd_hour_login_detection,
+    "Account Spray": run_account_spray_detection,
+    "Access Denied Flood": run_access_denied_flood_detection,
+
+    # New Detections
+    "Syslog Unauthorized Access": run_syslog_unauthorized_access,
+    "Syslog Privilege Escalation": run_syslog_privilege_escalation,
+    "Syslog Service Restart Flood": run_syslog_service_restart_flood,
+    "Web Application Attack": run_web_app_attack,
+    "High 404 Detection": run_high_404_detection,
+    "Windows Failed Login Brute Force": run_windows_failed_login,
+    "Windows Audit Log Cleared": run_windows_audit_log_cleared,
+    "Firewall Port Scan Detection": run_firewall_port_scan_detection,
+    "IDS/IPS Exploit Detection": run_ids_exploit_detection,
+    "VPN Unusual Login Hours": run_vpn_unusual_login_hours,
+    "Cloud IAM Changes": run_cloud_iam_changes,
+    "DNS Tunneling Detection": run_dns_tunneling_detection,
+    "Antivirus Threat Detection": run_antivirus_detection,
+    "Zeek Suspicious User Agent": run_zeek_suspicious_user_agent,
+    "Email Phishing Detection": run_email_phishing_detection,
+    "WAF Blocked SQLi/XSS": run_waf_sqli_xss_detection,
+    "Database Unauthorized Access": run_db_unauthorized_access,
+    "Proxy Malware URL Access": run_proxy_malware_url_access,
 }
 
-def run_all_active_rules_sync():
-    now = datetime.utcnow()
+# --- Execute Detection for a Rule (Only If Active) ---
+def _run_detection(rule_row):
+    rule_type = rule_row["rule_type"]
+
+    if not rule_row["active"]:
+        print(f"[SKIPPED] Rule {rule_row['id']} is inactive.")
+        return
+
+    if rule_type not in DETECTION_FUNCTIONS:
+        print(f"[SKIPPED] Unknown rule type: {rule_type}")
+        return
+
+    try:
+        time_window = rule_row["time_window"] or 1
+        threshold = rule_row["threshold"] or 1
+
+        DETECTION_FUNCTIONS[rule_type](
+            rule_id=rule_row["id"],
+            log_type=rule_row["log_type"],
+            time_window_minutes=time_window,
+            threshold=threshold,
+        )
+    except Exception as e:
+        print(f"[ERROR] While executing rule ID {rule_row['id']}: {e}")
+
+# --- Schedule One Rule ---
+def update_single_rule_schedule(rule_id: int):
     conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     try:
-        # Fetch active detection rules
-        cursor.execute("SELECT * FROM detection_rules WHERE active = 1")
-        rules = cursor.fetchall()
+        cursor.execute("SELECT * FROM detection_rules WHERE id = ?", (rule_id,))
+        rule = cursor.fetchone()
 
-        for rule in rules:
-            last_run_str = rule["last_run"]
-            # Parse last_run from ISO string to datetime object
-            last_run_dt = datetime.fromisoformat(last_run_str) if last_run_str else None
+        if not rule:
+            print(f"[ERROR] Rule ID {rule_id} not found.")
+            return
 
-            interval_minutes = rule["interval_minutes"] or 5 # Default to 5 if somehow null
-            due_time = (last_run_dt + timedelta(minutes=interval_minutes)) if last_run_dt else None
+        job_id = f"rule_{rule_id}"
+        scheduler.remove_job(job_id) if scheduler.get_job(job_id) else None
 
-            # If rule is due for execution (or has never run)
-            if not last_run_dt or now >= due_time:
-                rule_type = rule["rule_type"]
-                detection_function = DETECTION_FUNCTIONS.get(rule_type)
+        if rule["active"]:
+            interval = rule["interval_minutes"] or 5
+            scheduler.add_job(
+                func=partial(_run_detection, rule),
+                trigger=IntervalTrigger(seconds=10),
+                id=job_id,
+                replace_existing=True,
+            )
+            print(f"[SCHEDULER] Scheduled Rule {rule_id} ({rule['rule_type']}) every {interval} minutes")
+        else:
+            print(f"[SCHEDULER] Rule {rule_id} is inactive. Not scheduled.")
 
-                if detection_function:
-                    try:
-                        # Pass rule parameters dynamically based on rule_type
-                        # Ensure parameters match the function signatures
-                        if rule_type == "brute_force":
-                            detection_function(
-                                rule["id"],
-                                rule["log_type"],
-                                rule["time_window"],
-                                rule["threshold"],
-                                rule["last_run"]  # Pass the last_run value to the detection function
-                            )
-                        elif rule_type == "anomaly":
-                            detection_function(rule["id"], rule["log_type"])
-                        elif rule_type == "failed_login":
-                            detection_function(rule["id"], rule["log_type"], rule["threshold"])
-                        elif rule_type == "port_scan":
-                            # Assuming 'condition' or another field holds port_threshold
-                            port_threshold = rule["condition"] if rule["condition"] else 100
-                            detection_function(rule["id"], rule["log_type"], int(port_threshold))
-                        elif rule_type == "geo_location":
-                            # Using 'condition' for region
-                            region = rule["condition"] if rule["condition"] else "restricted"
-                            detection_function(rule["id"], rule["log_type"], region)
-                        elif rule_type == "custom_pattern":
-                            # Using 'condition' for pattern
-                            pattern = rule["condition"] if rule["condition"] else ""
-                            detection_function(rule["id"], rule["log_type"], pattern)
-                        # Extend with more conditions if needed for other rule types
-
-                        # Update last_run timestamp to now (ISO format string)
-                        cursor.execute(
-                            "UPDATE detection_rules SET last_run = ? WHERE id = ?", (now.isoformat(), rule["id"])
-                        )
-                        conn.commit() # Commit the rule's last_run update
-                    except Exception as e:
-                        print(f"[ERROR] Failed to run detection {rule_type} for rule {rule['id']}: {e}")
-                else:
-                    print(f"[WARNING] Unsupported detection rule type: {rule_type} for rule ID: {rule['id']}")
-            # else:
-            #     print(f"Rule {rule['name']} (ID: {rule['id']}) not due for execution yet.")
-    except sqlite3.Error as e:
-        print(f"[CRITICAL ERROR] Database error in run_all_active_rules: {e}")
     except Exception as e:
-        print(f"[CRITICAL ERROR] Unexpected error in run_all_active_rules: {e}")
+        print(f"[ERROR] Could not update schedule for Rule {rule_id}: {e}")
     finally:
         conn.close()
+
+# --- Schedule All Active Rules ---
+def start_rule_scheduler():
+    print("[INFO] Starting rule scheduler")
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        existing_jobs = {job.id for job in scheduler.get_jobs()}
+        cursor.execute("SELECT * FROM detection_rules")
+        rules = cursor.fetchall()
+
+        active_rules = [r for r in rules if r["active"]]
+        scheduled_job_ids = set()
+
+        for rule in active_rules:
+            job_id = f"rule_{rule['id']}"
+            interval = rule["interval_minutes"] or 5
+
+            scheduler.add_job(
+                func=partial(_run_detection, rule),
+                trigger=IntervalTrigger(seconds=10),
+                id=job_id,
+                replace_existing=True,
+            )
+            scheduled_job_ids.add(job_id)
+            print(f"[SCHEDULED] Rule {rule['id']} ({rule['rule_type']}) every {interval} minutes")
+
+        # Cleanup unused jobs
+        for job_id in existing_jobs - scheduled_job_ids:
+            if job_id.startswith("rule_"):
+                scheduler.remove_job(job_id)
+                print(f"[REMOVED] Obsolete job: {job_id}")
+
+        print(f"[DEBUG] Final scheduled jobs: {[job.id for job in scheduler.get_jobs()]}")
+
+    except Exception as e:
+        print(f"[ERROR] Failed to start scheduler: {e}")
+    finally:
+        conn.close()
+
+# --- Run Scheduler ---
+def start_scheduler_once():
+    if not scheduler.running:
+        scheduler.start()
+        print("[INFO] APScheduler started.")

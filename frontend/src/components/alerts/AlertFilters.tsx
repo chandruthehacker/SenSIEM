@@ -52,10 +52,11 @@ const typeOptions = [
 ]
 
 const sortOptions = [
-  { value: "timestamp", label: "Timestamp" },
+  // ✅ FIX: Changed value to "alert_time" to match the alert object property
+  { value: "alert_time", label: "Timestamp" }, 
   { value: "severity", label: "Severity" },
   { value: "status", label: "Status" },
-  { value: "type", label: "Type" },
+  { value: "rule_type", label: "Type" },
 ]
 
 export function AlertFilters({ filters, onFiltersChange, onRefresh, isLoading, alertCounts }: AlertFiltersProps) {
@@ -71,7 +72,7 @@ export function AlertFilters({ filters, onFiltersChange, onRefresh, isLoading, a
       status: "all",
       severity: "all",
       type: "all",
-      sortBy: "timestamp",
+      sortBy: "alert_time",
       sortOrder: "desc",
     })
   }

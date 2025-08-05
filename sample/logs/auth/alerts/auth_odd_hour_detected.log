@@ -1,0 +1,2 @@
+Aug  3 02:30:10 production-server sshd[16789]: Accepted password for admin from 10.10.10.20 port 34567 ssh2
+Aug  3 02:30:10 production-server sshd[16789]: pam_unix(sshd:session): session opened for user admin by (uid=0)

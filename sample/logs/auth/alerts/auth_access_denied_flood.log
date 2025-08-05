@@ -1,0 +1,10 @@
+Aug  2 22:15:01 dev-server sudo[18901]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:05 dev-server sudo[18902]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:09 dev-server sudo[18903]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:13 dev-server sudo[18904]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:17 dev-server sudo[18905]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:21 dev-server sudo[18906]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:25 dev-server sudo[18907]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:29 dev-server sudo[18908]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:33 dev-server sudo[18909]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure
+Aug  2 22:15:37 dev-server sudo[18910]: user_dev : TTY=pts/0 ; PWD=/home/user_dev ; USER=root ; COMMAND=/bin/cat /etc/shadow ; pam_unix(sudo:auth): authentication failure

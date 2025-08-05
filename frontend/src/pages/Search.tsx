@@ -298,7 +298,7 @@ function parseSearchQuery(query: string) {
                     ["all", "All Sources"],
                     ["syslog", "Syslog"],
                     ["apache", "Apache Log"],
-                    ["auth", "Auth Log"],
+                    ["auth.log", "Auth Log"],
                     ["nginx", "Nginx Log"],
                     ["windows_event", "Windows Event Logs"],
                     ["firewall", "Firewall Logs"],

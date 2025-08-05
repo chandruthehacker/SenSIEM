@@ -1,0 +1,1 @@
+Aug  2 21:25:00 web-server-01 sudo: user 'ubuntu' : command not allowed ; TTY=pts/0 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/bin/bash

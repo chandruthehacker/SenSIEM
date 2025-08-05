@@ -655,7 +655,7 @@ const handleAddSource = async () => {
                                 <SelectItem value="auto" className="hover:bg-gray-700 hover:cursor-pointer">Auto-detect</SelectItem>
                                 <SelectItem value="syslog" className="hover:bg-gray-700 hover:cursor-pointer">Syslog</SelectItem>
                                 <SelectItem value="apache" className="hover:bg-gray-700 hover:cursor-pointer">Apache Log</SelectItem>
-                                <SelectItem value="auth" className="hover:bg-gray-700 hover:cursor-pointer">Auth Log</SelectItem>
+                                <SelectItem value="auth.log" className="hover:bg-gray-700 hover:cursor-pointer">Auth Log</SelectItem>
                                 <SelectItem value="nginx" className="hover:bg-gray-700 hover:cursor-pointer">Nginx Log</SelectItem>
                                 <SelectItem value="windows_event" className="hover:bg-gray-700 hover:cursor-pointer">Windows Event Logs</SelectItem>
                                 <SelectItem value="firewall" className="hover:bg-gray-700 hover:cursor-pointer">Firewall Logs</SelectItem>
@@ -723,7 +723,7 @@ const handleAddSource = async () => {
                                 <SelectItem value="auto" className="hover:bg-gray-700 hover:cursor-pointer">Auto-detect</SelectItem>
                                 <SelectItem value="syslog" className="hover:bg-gray-700 hover:cursor-pointer">Syslog</SelectItem>
                                 <SelectItem value="apache" className="hover:bg-gray-700 hover:cursor-pointer">Apache Log</SelectItem>
-                                <SelectItem value="auth" className="hover:bg-gray-700 hover:cursor-pointer">Auth Log</SelectItem>
+                                <SelectItem value="auth.log" className="hover:bg-gray-700 hover:cursor-pointer">Auth Log</SelectItem>
                                 <SelectItem value="nginx" className="hover:bg-gray-700 hover:cursor-pointer">Nginx Log</SelectItem>
                                 <SelectItem value="windows_event" className="hover:bg-gray-700 hover:cursor-pointer">Windows Event Logs</SelectItem>
                                 <SelectItem value="firewall" className="hover:bg-gray-700 hover:cursor-pointer">Firewall Logs</SelectItem>

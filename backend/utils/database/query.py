@@ -71,7 +71,6 @@ def get_filtered_logs(kv: dict, msgs: list):
     con.close()
     return logs
 
-
 def getLogLevelDistribution():
     conn = get_db_connection()
     cursor = conn.cursor()

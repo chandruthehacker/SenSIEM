@@ -85,7 +85,7 @@ class DetectionRule(Base):
     time_window = Column(Integer)         # In seconds
     interval_minutes = Column(Integer, default=5)  # ✅ Interval
     active = Column(Boolean, default=True)
-    last_run = Column(DateTime, nullable=True)     # ✅ Track last run
+    last_run_id = Column(Integer, ForeignKey("parsed_logs.id"))     # ✅ Track last run
     created_at = Column(DateTime, default=datetime.utcnow)
 
 # 4. Alerts

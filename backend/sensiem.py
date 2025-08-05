@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from io import StringIO
 import os
@@ -7,11 +8,11 @@ from fastapi import FastAPI, File, Form, Request, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 
-from backend.detections.detections_runner import run_all_active_rules_sync
+from backend.detections.detections_runner import start_rule_scheduler, scheduler, start_scheduler_once, update_single_rule_schedule
 from backend.forwarder.forwarder import start_forwarder
 from backend.parser.log_parser import ingest_logs
 from backend.utils.database.database_operations import add_log_source_to_db, delete_log_source, get_db_connection, get_log_paths
@@ -34,7 +35,22 @@ def start_embedded_forwarder():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     start_embedded_forwarder()
+    print("[INFO] Backend starting... scheduling detection rules")
+
+    # Start scheduler only once
+    start_scheduler_once()
+
+    # Schedule all active detection rules
+    await asyncio.to_thread(start_rule_scheduler)
+    print("[INFO] Detection rules scheduled.")
+
     yield
+
+    print("[INFO] Application shutting down. Stopping APScheduler.")
+    from backend.detections.detections_runner import scheduler
+    if scheduler.running:
+        scheduler.shutdown()
+        print("[INFO] APScheduler has been stopped.")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -50,7 +66,6 @@ class LogLevelItem(BaseModel):
     name: str
     value: int
     color: str
-
 
 # Mount static React files
 app.mount("/static", StaticFiles(directory=os.path.join(FRONTEND_PATH, "assets")), name="static")
@@ -398,19 +413,26 @@ async def check_log_file_or_content(
 async def ingest_log(
     file: Optional[UploadFile] = File(None),
     content: Optional[str] = Form(None),
-    type: str = Form(...)
+    type: str = Form(...) # This 'type' refers to the expected log type for detection
 ):
+    """
+    API endpoint to ingest log files or content.
+    It detects the log type and saves the logs to the database.
+    The detection rules will run on their own schedule.
+    """
     try:
         if not file and not content:
             return JSONResponse(status_code=400, content={"status": "error", "message": "No file or content provided."})
 
+        # Read content from file or form
         text = (await file.read()).decode("utf-8", errors="ignore") if file else content
-        if not text.strip():
+        if not text or not text.strip(): # Check for None or empty string after stripping
             return JSONResponse(status_code=400, content={"status": "error", "message": "Empty log content."})
 
         f = StringIO(text)
         detected_type = "unknown"
 
+        # Read first 50 lines to detect log type
         for _ in range(50):
             line = f.readline()
             if not line.strip():
@@ -423,14 +445,18 @@ async def ingest_log(
         path = "Ingested Log " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         if detected_type != "unknown":
+            # Call your actual log ingestion function to save the parsed logs
             ingest_logs(text, detected_type, path)
-            run_all_active_rules_sync()
+            
+            print(f"[INFO] Log ingestion successful. Detected type: {detected_type}")
             return {"status": "success", "message": "Valid logs ingested.", "detected_type": detected_type}
 
+        print(f"[WARNING] Invalid log content for selected type. Detected type: {detected_type}")
         return {"status": "error", "message": "Invalid log content for selected type.", "detected_type": detected_type}
 
     except Exception as e:
-        return {"status": "error", "message": f"Ingestion failed: {str(e)}"}
+        print(f"[ERROR] Log ingestion failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
 
 class RuleToggleRequest(BaseModel):
     active: bool
@@ -455,7 +481,7 @@ async def get_detection_rules():
                 "time_window": row["time_window"],
                 "interval_minutes": row["interval_minutes"],
                 "active": row["active"],
-                "last_run": row["last_run"]
+                "last_run_id": row["last_run_id"]
             })
         return rules
     except Exception as e:
@@ -465,28 +491,35 @@ async def get_detection_rules():
 
 @app.patch("/api/detection-rules/{rule_id}")
 async def update_detection_rule(rule_id: int, data: RuleToggleRequest):
+    """
+    Updates the active status of a detection rule and re-schedules only that rule.
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Update rule status
         cursor.execute("UPDATE detection_rules SET active = ? WHERE id = ?", (int(data.active), rule_id))
         conn.commit()
 
-        # Re-run all active rules after the update
-        try:
-            run_all_active_rules_sync()
-        except Exception as rule_error:
-            print(f"[ERROR] Failed to execute rules after update: {rule_error}")
+        print(f"[INFO] Rule {rule_id} status updated to {data.active}. Updating scheduler...")
+
+        # 🔁 Reschedule only this rule
+        await asyncio.to_thread(update_single_rule_schedule, rule_id)
 
         return {
             "status": "success",
-            "rule_id": rule_id,
+            "message": f"Rule {rule_id} status updated and scheduler adjusted.",
             "active": data.active
         }
 
+    except sqlite3.Error as e:
+        conn.rollback()
+        print(f"[ERROR] Database error while updating rule {rule_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update rule: {e}")
+        print(f"[ERROR] Unexpected error while updating rule {rule_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
 
     finally:
         conn.close()

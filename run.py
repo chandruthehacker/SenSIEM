@@ -7,8 +7,6 @@ import uvicorn
 import threading
 
 from backend.configs.config import load_config, save_config
-from backend.detections.detections_runner import run_all_active_rules_sync
-from backend.sensiem import get_detection_rules
 from backend.utils.database.database_operations import insert_default_detection_rules
 from backend.utils.database.models import create_tables
 from backend.utils.validation import is_valid_ip, is_valid_port
@@ -70,9 +68,6 @@ if __name__ == "__main__":
     # Start frontend and browser in background
     threading.Thread(target=start_frontend, daemon=True).start()
     threading.Thread(target=open_browser, daemon=True).start()
-
-    # ✅ Run detection in background so it doesn't block the server
-    threading.Thread(target=run_all_active_rules_sync, daemon=True).start()
 
     # ✅ Start the FastAPI backend
     uvicorn.run(backend_app, host=backendIP, port=backendPort, reload=True)

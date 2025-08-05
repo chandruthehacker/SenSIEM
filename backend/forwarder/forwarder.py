@@ -9,7 +9,7 @@ current_dir = os.path.dirname(__file__)
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(parent_dir)
 
-from backend.detections.detections_runner import run_all_active_rules_sync
+from backend.detections.detections_runner import start_rule_scheduler
 from backend.parser.log_parser import parser
 from backend.utils.database.database_operations import get_db_connection
 
@@ -94,7 +94,6 @@ def send_buffered_logs(log_queue: deque, stop_event: threading.Event):
                         buffer.clear()
                         last_sent_time = time.time()
                         print("DEBUG: Logs sent and buffer cleared.")
-                        run_all_active_rules_sync()
                     except Exception as e:
                         print(f"[!] Failed to send log batch: {e}")
                         buffer.clear()

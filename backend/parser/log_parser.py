@@ -1,6 +1,8 @@
+import logging
 import re
 from datetime import datetime, timedelta, timezone
 import json
+from typing import Optional
 
 from backend.utils.database.database_operations import add_log_source_to_db, add_parsed_log_to_db, get_db_connection
 
@@ -36,8 +38,8 @@ def _default_parsed_log_dict(log: str, log_type: str, file_path: str, source_id:
         "tags": None,
     }
 
-def _format_timestamp(dt_obj: datetime) -> str | None:
-    if dt_obj:
+def _format_timestamp(dt_obj: Optional[datetime]) -> Optional[str]:
+    if isinstance(dt_obj, datetime):
         return dt_obj.strftime("%m/%d/%Y %I:%M:%S %p")
     return None
 
@@ -980,7 +982,7 @@ def parse_unsupported_log_type(log: str, log_type: str, file_path: str, source_i
 LOG_TYPE_DISPATCH = {
     "syslog": parse_syslog,
     "apache": parse_apache,
-    "auth": parse_auth,
+    "auth.log": parse_auth,
     "nginx": parse_nginx,
     "win_evt": parse_windows_event_log,
     "firewall": parse_firewall,
@@ -1006,7 +1008,8 @@ def parser(payloads):
             source = payload.get("source")
             source_id = payload.get("source_id")
 
-            if not log_type or not log_line:
+            if not all([log_type, log_line, source, source_id]):
+                logging.warning(f"Skipping payload due to missing data: {payload}")
                 continue
 
             parser_func = LOG_TYPE_DISPATCH.get(log_type.lower())

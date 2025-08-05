@@ -30,7 +30,7 @@ patterns = {
         "nginx": r'^\S+ \S+ \S+ \[[^\]]+\] "\S+ \S+ HTTP/\d\.\d" \d{3} \d+ "[^"]*"(?: "|-)? "[^"]*"|'
                  r'^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[[^\]]+\] \d+#\d+: \*?\d+ ([^ ]+, )?client: \S+, server: \S+, request: "\S+ \S+ HTTP/\d\.\d", host: "\S+"(?:, referrer: "\S+")?, (?:upstream: "\S+", )?(?:response: "\S+", )?request_time: \S+,\s*(?:upstream_response_time: \S+, )?(?:bytes_sent: \d+, )?(?:status: \d+)',
 
-        "auth": r"\b(sshd|sudo|CRON|USER|PAM|login|su|gdm|kdm)\b.*(session opened|authentication failure|invalid user|Accepted password for|Failed password for|disconnected from|new session)",
+        "auth.log": r"\b(sshd|sudo|CRON|USER|PAM|login|su|gdm|kdm)\b.*(session opened|authentication failure|invalid user|Accepted password for|Failed password for|disconnected from|new session)",
         
         "syslog": r"^\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\S+(?:\[\d+\])?:\s+",
         

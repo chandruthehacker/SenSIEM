@@ -1,0 +1,6 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System><EventID>1102</EventID><TimeCreated SystemTime="2025-08-02T21:30:00.000000000Z"/></System>
+    <EventData>
+        <Data Name="SubjectUserSid">S-1-5-21-...</Data><Data Name="SubjectUserName">Administrator</Data>
+    </EventData>
+</Event>

@@ -1,0 +1,5 @@
+Aug  2 21:10:05 webserver sshd[13456]: Failed password for user_admin from 203.0.113.20 port 50123 ssh2
+Aug  2 21:10:08 webserver sshd[13456]: Failed password for user_admin from 203.0.113.20 port 50123 ssh2
+Aug  2 21:10:11 webserver sshd[13456]: Failed password for user_admin from 203.0.113.20 port 50123 ssh2
+Aug  2 21:10:15 webserver sshd[13456]: Accepted password for user_admin from 203.0.113.20 port 50123 ssh2
+Aug  2 21:10:15 webserver sshd[13456]: pam_unix(sshd:session): session opened for user user_admin by (uid=0)

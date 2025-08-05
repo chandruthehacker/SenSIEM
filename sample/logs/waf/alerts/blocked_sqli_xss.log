@@ -1,0 +1,1 @@
+Aug  2 21:39:00 waf-01.corp CEF:0|Imperva|SecureSphere|12.5.0|3000|Web Attack|6|src=10.0.0.50 dst=192.168.1.20 dpt=80 request=/search?q=a' union select 1,2-- blocked=1

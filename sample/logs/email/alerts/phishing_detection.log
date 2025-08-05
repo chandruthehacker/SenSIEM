@@ -1,0 +1,1 @@
+Aug  2 21:38:00 mail-server-01 postfix/smtp[1234]: 851F6F500C3: to=<user@internal.com>, relay=... status=sent (250 2.0.0 OK) subject="URGENT: Your password is expiring!"
