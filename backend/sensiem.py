@@ -18,7 +18,7 @@ from backend.parser.log_parser import ingest_logs
 from backend.utils.database.database_operations import add_log_source_to_db, delete_log_source, get_db_connection, get_log_paths
 from backend.utils.database.query import get_filtered_logs, get_logs_from_db, get_top_ips_from_db, getDashBoardmetrics, getGeoSuspiciousIPs, getLogLevelDistribution, getNoisySource, getSystemErrors, getTimeSeries, getTopAlerts
 from backend.utils.log_finder import log_type_find, specific_log_type_find
-from backend.utils.validation import is_log_content_valid, is_valid_ip, is_valid_path, is_valid_port
+from backend.utils.validation import is_log_content_valid, is_valid_ip, is_valid_path, is_valid_port, validate_email
 from backend.configs.config import load_config, save_config
 
 
@@ -247,41 +247,61 @@ async def saveSettings(request: Request):
         content={"status": "success", "message": "Settings saved successfully"}
     )
 
-@app.post("/api/save-backend-settings")
-async def saveBackendSetting(request: Request):
+@app.post("/api/save-notification-settings")
+async def save_notification_settings(request: Request):
     data = await request.json()
-    errors = []
-
-    # Validate backend IP
-    backend_ip = data.get("backendIP", "")
-    if not is_valid_ip(backend_ip):
-        errors.append(f"\nIP '{backend_ip}' is invalid. Please enter a valid IP address.")
-
-    # Validate backend Port
-    try:
-        backend_port = int(data.get("backendPort", ""))
-    except (ValueError, TypeError):
-        backend_port = -1
-
-    if not is_valid_port(backend_port):
-        errors.append(f"\n\nPort '{data.get('backendPort')}' is invalid. Please enter a valid port number between 1 and 65535.")
-    
-    if errors:
-        return JSONResponse(
-            status_code=400,
-            content={"status": "error", "errors": errors}
-        )
-
     config = load_config()
-    
-    config["backendIP"] = backend_ip
-    config["backendPort"] = backend_port
+    errors = {}
+
+    # === Validate Email Settings ===
+    if data.get("emailEnabled"):
+        if not validate_email(data.get("emailRecipient", "")):
+            errors["emailRecipient"] = "Invalid email recipient address."
+        if not validate_email(data.get("emailSender", "")):
+            errors["emailSender"] = "Invalid email sender address."
+        if not data.get("emailSmtpServer"):
+            errors["emailSmtpServer"] = "SMTP server is required."
+        if not data.get("emailSmtpPort"):
+            errors["emailSmtpPort"] = "SMTP port is required."
+        if not data.get("emailPassword"):
+            errors["emailPassword"] = "Email password is required."
+
+    # === Validate Slack Settings ===
+    if data.get("slackEmabled"):  # Note typo in your config: "slackEmabled"
+        if not data.get("slackWebhookUrl"):
+            errors["slackWebhookUrl"] = "Slack webhook URL is required."
+
+    # === Validate Telegram Settings ===
+    if data.get("telegramEnabled"):
+        if not data.get("telegramBotToken"):
+            errors["telegramBotToken"] = "Telegram bot token is required."
+        if not data.get("telegramChatId"):
+            errors["telegramChatId"] = "Telegram Chat ID is required."
+
+    # === Return Validation Errors if Any ===
+    if errors:
+        return JSONResponse(status_code=400, content={"status": "error", "errors": errors})
+
+    # === Update and Save the Config ===
+    config["notificationSettings"] = {
+        "emailEnabled": data.get("emailEnabled"),
+        "emailRecipient": data.get("emailRecipient", ""),
+        "emailSender": data.get("emailSender", ""),
+        "emailSmtpServer": data.get("emailSmtpServer", ""),
+        "emailSmtpPort": data.get("emailSmtpPort", ""),
+        "emailPassword": data.get("emailPassword", ""),
+        "slackEmabled": data.get("slackEmabled"),
+        "slackWebhookUrl": data.get("slackWebhookUrl", ""),
+        "telegramEnabled": data.get("telegramEnabled"),
+        "telegramBotToken": data.get("telegramBotToken", ""),
+        "telegramChatId": data.get("telegramChatId", ""),
+    }
 
     save_config(config)
 
     return JSONResponse(
         status_code=200,
-        content={"status": "success", "message": "Settings saved successfully"}
+        content={"status": "success", "message": "Notification settings saved successfully"}
     )
 
 @app.post("/api/delete-log-path")

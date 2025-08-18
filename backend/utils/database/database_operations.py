@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import os
 from threading import Thread
 
+from backend.notifications.all_notifications import alert_notification
 from backend.utils.database.models import ParsedLog
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -230,23 +231,83 @@ def add_parsed_log_to_db(parsed_data):
     finally:
         con.close()
 
-def create_alert(rule_id, severity, message, source_id, log_id=None, ip=None, host=None, source=None, log_level=None, rule_type=None, rule_name=None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+def create_alert(
+    rule_id: int,
+    severity: str,
+    message: str,
+    source_id: int,
+    log_id: int = None,
+    ip: str = None,
+    host: str = None,
+    source: str = None,
+    log_level: str = None,
+    rule_type: str = None,
+    rule_name: str = None
+) -> int:
+    """
+    Create a new alert in the database and trigger notifications.
 
-    cursor.execute("""
-        INSERT INTO alerts (
-            rule_id, severity, message, log_source_id, log_id, ip, host, source,
-            log_level, rule_type, rule_name, alert_time, status
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        rule_id, severity, message, source_id, log_id, ip, host, source,
-        log_level, rule_type, rule_name, datetime.utcnow(), "new"
-    ))
+    Args:
+        rule_id (int): ID of the triggered detection rule.
+        severity (str): Severity level of the alert (e.g., "High", "Medium").
+        message (str): Description of the alert.
+        source_id (int): ID of the log source.
+        log_id (int, optional): ID of the matching log (if available).
+        ip (str, optional): Source IP address.
+        host (str, optional): Hostname from which the log originated.
+        source (str, optional): Log source name (e.g., "syslog").
+        log_level (str, optional): Log level (e.g., "error", "warning").
+        rule_type (str, optional): Type of rule triggered.
+        rule_name (str, optional): Name/label of the rule.
 
-    conn.commit()
-    conn.close()
+    Returns:
+        int: The ID of the created alert.
+    """
+    alert_time = datetime.utcnow()
+
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO alerts (
+                    rule_id, severity, message, log_source_id, log_id, ip, host, source,
+                    log_level, rule_type, rule_name, alert_time, status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                rule_id, severity, message, source_id, log_id, ip, host, source,
+                log_level, rule_type, rule_name, alert_time, "new"
+            ))
+
+            alert_id = cursor.lastrowid
+            conn.commit()
+
+    except Exception as e:
+        print(f"[ERROR] Failed to create alert: {e}")
+        return -1
+
+    def format_alert_time(iso_time_str):
+        dt = datetime.fromisoformat(iso_time_str)
+        return dt.strftime("%d %b %Y, %I:%M %p")
+    # Prepare alert data for notifications
+    alert_data = {
+        "alert_id": alert_id,
+        "rule_id": rule_id,
+        "severity": severity,
+        "message": message,
+        "ip": ip,
+        "host": host,
+        "source": source,
+        "log_level": log_level,
+        "rule_type": rule_type,
+        "rule_name": rule_name,
+        "alert_time": format_alert_time(alert_time.isoformat()),
+    }
+
+    alert_notification(alert_data)
+
+    return alert_id
 
 def insert_default_detection_rules():
     default_rules = [

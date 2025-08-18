@@ -119,9 +119,6 @@ class Alert(Base):
     rule = relationship("DetectionRule")
     log_source = relationship("LogSource")
 
-
-
-
 # 5. Saved Queries
 class SavedQuery(Base):
     __tablename__ = "saved_queries"

@@ -1,6 +1,7 @@
 from io import StringIO
 import ipaddress
 import os
+import re
 from backend.utils.log_finder import log_type_find
 
 
@@ -45,3 +46,6 @@ def is_log_content_valid(text: str) -> dict:
         return {"result": "error", "message": "Invalid log content", "type": log_type}
     
     return {"result": "success", "message": "Valid log content", "type": log_type}
+
+def validate_email(value: str) -> bool:
+    return re.match(r"[^@]+@[^@]+\.[^@]+", value)

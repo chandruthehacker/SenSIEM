@@ -1,7 +1,6 @@
-from collections import defaultdict, deque
+from collections import defaultdict
 from datetime import datetime, timedelta
 import re
-from typing import Any, Dict, List, Tuple
 from backend.detections.fetch_update_logs import _fetch_rule_and_logs, _update_last_run_id
 from backend.utils.database.database_operations import create_alert, get_db_connection
 
@@ -59,7 +58,7 @@ def run_brute_force_detection(rule_id: int, log_type: str, threshold: int, **kwa
                     ip=ip,
                     host=last_log["host"],
                     source='auth.log',
-                    log_level=last_log["log_level"],
+                    log_level="High",
                     rule_type=rule["rule_type"],
                     rule_name=rule["name"]
                 )
@@ -151,7 +150,7 @@ def run_success_after_fail_detection(
                     ip=ip,
                     host=success_log["host"],
                     source=success_log["source"],
-                    log_level=success_log["log_level"],
+                    log_level="High",
                     rule_type=rule["rule_type"],
                     rule_name=rule["name"]
                 )

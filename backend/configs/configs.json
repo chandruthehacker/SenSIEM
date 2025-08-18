@@ -3,14 +3,6 @@
   "backendPort": 8787,
   "apiUrl": "http://localhost:8787/api",
   "logSources": {},
-  "detectionRules": [],
-  "newRuleName": "",
-  "newRuleDefinition": "",
-  "alertThresholds": {
-    "logVolume": 10000,
-    "errorRate": 11,
-    "criticalEvents": 11
-  },
   "notificationSettings": {
     "emailEnabled": false,
     "emailRecipient": "",
@@ -18,22 +10,10 @@
     "emailSmtpServer": "",
     "emailSmtpPort": "587",
     "emailPassword": "",
-    "slackEnabled": false,
+    "slackEmabled": false,
     "slackWebhookUrl": "",
     "telegramEnabled": false,
     "telegramBotToken": "",
     "telegramChatId": ""
-  },
-  "forwarderConfig": {
-    "ip": "127.0.0.1",
-    "port": "9000",
-    "token": ""
-  },
-  "bruteForceThreshold": 5,
-  "bruteForceInterval": 1,
-  "alertRefreshInterval": 5,
-  "email": "",
-  "slackWebhook": "",
-  "telegramBotToken": "",
-  "telegramChatId": ""
+  }
 }
