@@ -20,6 +20,10 @@
 
 ---
 
+## 🌐 Live Demo  
+👉 [**View the Live Page**](https://chandruthehacker.github.io/SenSIEM-sample-page)
+
+---
 ## 🛡️ What is SenSIEM?
 
 **SenSIEM** (Security Event Notification + SIEM) is a modular, real-time Security Information and Event Management (SIEM) platform built for:
